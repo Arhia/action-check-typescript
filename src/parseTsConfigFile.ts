@@ -1,6 +1,12 @@
 import * as fs from 'fs'
+import * as ts from 'typescript'
 
-export function parseTsConfigFile(configPath: string): object {
+interface Tsconfig {
+    compilerOptions: ts.CompilerOptions
+    include?: string[]
+    exclude?: string[]
+}
+export function parseTsConfigFile(configPath: string): Tsconfig {
     const content = fs.readFileSync(configPath).toString()
-    return JSON.parse(content) as object
+    return JSON.parse(content) as Tsconfig
 }
