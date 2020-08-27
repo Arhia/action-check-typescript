@@ -1,10 +1,16 @@
 name: 'Your name here'
 description: 'Provide a description here'
-author: 'Your name or organization here'
+author: 'Arhia'
 inputs:
   repo-token:
     description: 'Token for the repository. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
     required: true
+  directory:
+    description: "Directery where to run install and build. Default is ."
+    default: '.'
+  config-path:
+    description: "Path of tsconfig file. default is ."
+    default: '.'
 runs:
   using: 'node12'
   main: 'dist/index.js'
