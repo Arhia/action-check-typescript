@@ -7,6 +7,12 @@ interface Cfg {
   tsconfigPath?: string
   files?: string[]
 }
+/*
+exemple d'output renvoyé
+
+src/main.ts(39,11): error TS1155: 'const' declarations must be initialized.
+src/main.ts(39,11): error TS7005: Variable 'hereIsAUnusedVariableToHaveAnError' implicitly has an 'any' type.
+*/
 export async function runTsc({ workingDir, tsconfigPath, files }: Cfg): Promise<{ output: string, error: string }> {
 
   let myOutput = ''
@@ -42,7 +48,7 @@ export async function runTsc({ workingDir, tsconfigPath, files }: Cfg): Promise<
   }
 
   try {
-    await exec('node', execArgs)
+    await exec('node', execArgs, options)
   } catch (error) {
     setFailed('')
   }
