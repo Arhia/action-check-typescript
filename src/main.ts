@@ -1,19 +1,17 @@
 import { info, startGroup, endGroup, setFailed } from '@actions/core'
 import * as path from 'path'
-// import { context, getOctokit } from '@actions/github'
+import { context, getOctokit } from '@actions/github'
 // import { createCheck } from './createCheck'
 import * as github from '@actions/github'
-import { GitHub } from '@actions/github/lib/utils'
-//import { compile } from './compile'
 import * as fs from 'fs'
 import { parseTsConfigFileToCompilerOptions } from './parseTsConfigFileToCompilerOptions'
 import { getAndValidateArgs } from './getAndValidateArgs'
 import { parseTsConfigFile } from './parseTsConfigFile'
-import { getFilesToCompile } from './getFilesToCompile'
 import { exec } from '@actions/exec'
 //import { filterErrors } from './filterErrors'
-//import { formatOneError } from './formatOneError'
 import { runTsc } from './runTsc'
+import { parseOutputTsc } from './parseOutputTsc'
+import { getBodyComment } from './getBodyComment'
 
 interface PullRequest {
   number: number;
@@ -21,8 +19,6 @@ interface PullRequest {
   body?: string
   changed_files: number
 }
-
-type GithubClient = InstanceType<typeof GitHub>
 
 async function run(): Promise<void> {
   try {
@@ -35,6 +31,8 @@ async function run(): Promise<void> {
     if (!fs.existsSync(tsconfigPath)) {
       throw new Error(`could not find tsconfig.json at: ${tsconfigPath}`)
     }
+
+    const octokit = getOctokit(args.repoToken)
 
     const pr = github.context.payload.pull_request
 
@@ -71,6 +69,7 @@ async function run(): Promise<void> {
     const config = parseTsConfigFile(tsconfigPath)
     info(`[current branch] config ${JSON.stringify(config)}`)
 
+    /*
     const fileNames = getFilesToCompile({
       workingDir,
       rootDir: config.compilerOptions.rootDir,
@@ -79,9 +78,9 @@ async function run(): Promise<void> {
     })
 
     info(`[current branch] files to compile : \n${fileNames.map(one => `${one}\n`)}`)
+    */
 
     startGroup(`[current branch] compile ts files`)
-    //const resultTsc = compile(fileNames, compilerOptions)
 
     const { output: tscOutput, error: execError } = await runTsc({
       workingDir,
@@ -91,10 +90,16 @@ async function run(): Promise<void> {
     info(`output exec compiler: ${tscOutput}`)
     info(`error exec compiler: ${execError}`)
 
+    const errors = parseOutputTsc(tscOutput)
+
+    endGroup()
+
     /*
     const errorsRelatedToSourceCode = filterErrors(resultTsc.fileErrors, fileNames)
     info(`[current branch] number of typescript errors for all project files: ${errorsRelatedToSourceCode.length}`)
+    */
 
+    /*
     startGroup(`[current branch] project errors \n${errorsRelatedToSourceCode.map(formatOneError)}`)
     endGroup()
 
@@ -104,6 +109,50 @@ async function run(): Promise<void> {
     info(`[current branch] number of typescript errors for changed files: ${errorsRelatedToChangedFiles.length}`)
     endGroup()
     */
+
+    /*
+    const finish = await createCheck(octokit, context)
+    
+    await finish({
+      conclusion: 'success',
+      output: {
+        title: `Check tsc errors`,
+        summary: markdownDiff
+      }
+    })
+    */
+
+    startGroup(`Creating comment`)
+
+    const commentInfo = {
+      ...context.repo,
+      issue_number: context.payload.pull_request!.number
+    }
+
+    const comment = {
+      ...commentInfo,
+      body: getBodyComment(errors, [])
+    }
+
+    try {
+      await octokit.issues.createComment(comment)
+    } catch (e) {
+      info(`Error creating comment: ${e.message}`)
+      info(`Submitting a PR review comment instead...`)
+      try {
+        const issue = context.issue || pr
+        await octokit.pulls.createReview({
+          owner: issue.owner,
+          repo: issue.repo,
+          pull_number: issue.number,
+          event: 'COMMENT',
+          body: comment.body
+        })
+      } catch (errCreateComment) {
+        info(`Error creating PR review ${errCreateComment.message}`)
+      }
+    }
+
 
   } catch (errorRun) {
     setFailed(errorRun.message)

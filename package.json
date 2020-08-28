@@ -27,7 +27,7 @@
     "@actions/exec": "1.0.4",
     "@actions/github": "4.0.0",
     "@octokit/rest": "18.0.4",
-    "globby": "^11.0.1"
+    "globby": "11.0.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.10",
