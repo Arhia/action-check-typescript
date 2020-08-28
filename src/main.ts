@@ -12,6 +12,9 @@ import { exec } from '@actions/exec'
 import { runTsc } from './runTsc'
 import { parseOutputTsc } from './parseOutputTsc'
 import { getBodyComment } from './getBodyComment'
+import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
+import { filterErrors } from './filterErrors'
+import { compareErrors } from './compareErrors'
 
 interface PullRequest {
   number: number;
@@ -82,18 +85,41 @@ async function run(): Promise<void> {
 
     startGroup(`[current branch] compile ts files`)
 
-    const { output: tscOutput, error: execError } = await runTsc({
+    const { output: tscOutputCurrent, error: execErrorCurrent } = await runTsc({
       workingDir,
       tsconfigPath
     })
 
-    info(`output exec compiler: ${tscOutput}`)
-    info(`error exec compiler: ${execError}`)
+    info(`output exec compiler: ${tscOutputCurrent}`)
+    info(`error exec compiler: ${execErrorCurrent}`)
 
-    const errors = parseOutputTsc(tscOutput)
+    const errorsProjectCurrent = parseOutputTsc(tscOutputCurrent)
 
     endGroup()
 
+    startGroup(`[base branch] compile ts files`)
+
+    checkoutAndInstallBaseBranch({
+      installScript,
+      payload: context.payload,
+      execOptions
+    })
+
+    const { output: tscOutputBase, error: execErrorBase } = await runTsc({
+      workingDir,
+      tsconfigPath
+    })
+
+    info(`output exec compiler: ${tscOutputBase}`)
+    info(`error exec compiler: ${execErrorBase}`)
+
+    const errorsProjectBase = parseOutputTsc(tscOutputCurrent)
+
+    endGroup()
+
+    const filesChangedNodes = pr.repository.pullRequest.files.nodes
+
+    info(`pr.repository.pullRequest.files.nodes ${JSON.stringify(filesChangedNodes)}`)
     /*
     const errorsRelatedToSourceCode = filterErrors(resultTsc.fileErrors, fileNames)
     info(`[current branch] number of typescript errors for all project files: ${errorsRelatedToSourceCode.length}`)
@@ -129,9 +155,13 @@ async function run(): Promise<void> {
       issue_number: context.payload.pull_request!.number
     }
 
+    const errorsInPr = filterErrors(errorsProjectCurrent, args.filesChanged)
+
+    const newErrorsInPr = compareErrors(errorsProjectBase, errorsProjectCurrent)
+
     const comment = {
       ...commentInfo,
-      body: getBodyComment(errors, [])
+      body: getBodyComment({ errorsInProjectBefore: errorsProjectCurrent, errorsInProjectAfter: errorsProjectBase, errorsInPr, newErrorsInPr })
     }
 
     try {

@@ -55,7 +55,6 @@ export function parseTscErrorLine(str: string, matcher: Matcher): ErrorParsed {
         throw error
     }
     const result: { [k: string]: string } = {}
-    console.log(`contenu de arr: ${JSON.stringify(arr)}`)
     arr.forEach((hash, index) => {
         const matcherHash = matcher.parts.find(part => part.position === index)
         if (matcherHash) {
