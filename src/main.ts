@@ -17,15 +17,15 @@ type GithubClient = InstanceType<typeof GitHub>
 async function run(): Promise<void> {
   try {
     const args = getAndValidateArgs()
-    info('Starting GitHub Client')
     const workingDir = path.join(process.cwd(), args.directory)
+    info(`working directory: ${workingDir}`)
 
     const tsconfigPath = path.join(workingDir, args.configPath)
+    info(`tsconfigPath: ${tsconfigPath}`)
     if (!fs.existsSync(tsconfigPath)) {
       throw new Error(`could not find tsconfig.json at: ${tsconfigPath}`)
     }
 
-    info('Starting GitHub Client')
     //const client = github.getOctokit(args.repoToken)
 
     const pr = github.context.payload.pull_request
