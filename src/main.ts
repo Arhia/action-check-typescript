@@ -1,14 +1,13 @@
 import { info, startGroup, endGroup, setFailed } from '@actions/core'
 import * as path from 'path'
 import { context, getOctokit } from '@actions/github'
-// import { createCheck } from './createCheck'
+import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
 import { parseTsConfigFileToCompilerOptions } from './parseTsConfigFileToCompilerOptions'
 import { getAndValidateArgs } from './getAndValidateArgs'
 import { parseTsConfigFile } from './parseTsConfigFile'
 import { exec } from '@actions/exec'
-//import { filterErrors } from './filterErrors'
 import { runTsc } from './runTsc'
 import { parseOutputTsc } from './parseOutputTsc'
 import { getBodyComment } from './getBodyComment'
@@ -103,18 +102,6 @@ async function run(): Promise<void> {
 
     endGroup()
 
-    /*
-    const finish = await createCheck(octokit, context)
-    
-    await finish({
-      conclusion: 'success',
-      output: {
-        title: `Check tsc errors`,
-        summary: markdownDiff
-      }
-    })
-    */
-
     startGroup(`Creating comment`)
 
     const commentInfo = {
@@ -154,9 +141,28 @@ async function run(): Promise<void> {
         info(`Error creating PR review ${errCreateComment.message}`)
       }
     }
-
     endGroup()
 
+    const isPrOk = !errorsInPr.length
+    const finish = await createCheck(octokit, context)
+
+    if (isPrOk) {
+      await finish({
+        conclusion: 'success',
+        output: {
+          title: `Check tsc errors`,
+          summary: `No tsc error in the PR files.`
+        }
+      })
+    } else {
+      await finish({
+        conclusion: 'failure',
+        output: {
+          title: `Check tsc errors`,
+          summary: `${errorsInPr.length} tsc error in the PR files.`
+        }
+      })
+    }
 
   } catch (errorRun) {
     setFailed(errorRun.message)
