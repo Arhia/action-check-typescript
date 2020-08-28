@@ -1,5 +1,5 @@
-name: 'Your name here'
-description: 'Provide a description here'
+name: 'Action Check Typescript errors'
+description: 'Check tsc errors and compare errors wih base branch'
 author: 'Arhia'
 inputs:
   repo-token:
