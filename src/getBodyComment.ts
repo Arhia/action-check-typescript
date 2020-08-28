@@ -13,18 +13,18 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     let s = ``
 
     if (!errorsInProjectAfter.length) {
-        s = `No Typescript error in the project ! 🎉`
+        s = `No Typescript error in the project ! 🎉  \n`
         if (delta < 0) {
-            s += `You have remove ${-delta} errors in the code 💪`
+            s += `You have remove ${-delta} errors in the code 💪  \n`
         }
         return s
     }
 
     s += `${errorsInProjectAfter.length} Typescript errors detected in the project 😟.  \n`
     if (delta < 0) {
-        s += `You have remove ${-delta} errors in the code 👏`
+        s += `You have remove ${-delta} errors in the code 👏  \n`
     } else {
-        s += `You have added ${delta} errors in the code 😥`
+        s += `You have added ${delta} errors in the code 😥  \n`
     }
     s += `<details><summary>Details of errors in project</summary>  \n${getListOfErrors(errorsInProjectAfter)}</details>  \n`
 
