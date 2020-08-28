@@ -6,6 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Detecting files changed
+        id: files
+        uses: futuratrepadeira/changed-files@v3.2.1
+        with:
+          repo-token: ${{ github.token }}
+          pattern: '^.*\.ts$'
       - name: List files changed
         run: |
           echo 'Files modified: ${{steps.files.outputs.files_updated}}'
