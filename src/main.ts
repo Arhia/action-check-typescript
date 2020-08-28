@@ -11,6 +11,8 @@ import { getAndValidateArgs } from './getAndValidateArgs'
 import { parseTsConfigFile } from './parseTsConfigFile'
 import { getFilesToCompile } from './getFilesToCompile'
 import { exec } from '@actions/exec'
+import { filterErrors } from './filterErrors'
+import { formatOneError } from './formatOneError'
 
 type GithubClient = InstanceType<typeof GitHub>
 
@@ -26,12 +28,8 @@ async function run(): Promise<void> {
       throw new Error(`could not find tsconfig.json at: ${tsconfigPath}`)
     }
 
-    //const client = github.getOctokit(args.repoToken)
-
     const pr = github.context.payload.pull_request
 
-    // changed files
-    //const files = pr!.repository.pullRequest.files.nodes
 
     if (!pr) {
       throw Error('Could not retrieve PR information. Only "pull_request" triggered workflows are currently supported.')
@@ -51,26 +49,44 @@ async function run(): Promise<void> {
       installScript = `npm ci`
     }
 
-    startGroup(`[current] Install Dependencies`)
+    startGroup(`[current branch] Install Dependencies`)
     info(`Installing using ${installScript}`)
     await exec(installScript, [], execOptions)
     endGroup()
 
-    const compilerOptions = parseTsConfigFileToCompilerOptions(tsconfigPath)
-    info(`compilerOptions ${JSON.stringify(compilerOptions)}`)
+    const compilerOptions = {
+      ...parseTsConfigFileToCompilerOptions(tsconfigPath),
+      noEmit: true
+    }
+
+    info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
 
     const config = parseTsConfigFile(tsconfigPath)
-    info(`config ${JSON.stringify(config)}`)
+    info(`[current branch] config ${JSON.stringify(config)}`)
 
-    const fileNames: string[] = getFilesToCompile({
+    const fileNames = getFilesToCompile({
       workingDir,
       rootDir: config.compilerOptions.rootDir,
       include: config.include,
       exclude: config.exclude
     })
-    info(`files to compile : \n${fileNames.map(one => `${one}\n`)}`)
 
-    compile(fileNames, compilerOptions)
+    info(`[current branch] files to compile : \n${fileNames.map(one => `${one}\n`)}`)
+
+    startGroup(`[current branch] compile ts files`)
+    const resultTsc = compile(fileNames, compilerOptions)
+
+    const errorsRelatedToSourceCode = filterErrors(resultTsc.fileErrors, fileNames)
+    info(`[current branch] number of typescript errors for all project files: ${errorsRelatedToSourceCode.length}`)
+
+    startGroup(`[current branch] project errors \n${errorsRelatedToSourceCode.map(formatOneError)}`)
+    endGroup()
+
+    const filesChanged = pr.repository.pullRequest.files.nodes
+    const errorsRelatedToChangedFiles = filterErrors(resultTsc.fileErrors, filesChanged)
+    info(`[current branch] number of typescript errors for changed files: ${errorsRelatedToChangedFiles.length}`)
+    endGroup()
+
   } catch (errorRun) {
     setFailed(errorRun.message)
   }
