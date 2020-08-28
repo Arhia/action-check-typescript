@@ -1,9 +1,25 @@
 import * as ts from 'typescript'
 import { info } from '@actions/core'
 
-export function compile(fileNames: string[], options: ts.CompilerOptions): void {
-  const program = ts.createProgram(fileNames, options)
+export interface ErrorTs {
+  fileName: string
+  line: number
+  column: number
+  message: string
+}
+
+export interface ResultTsc {
+  fileErrors: ErrorTs[]
+  otherErrors: string[]
+  exitCode: number
+}
+
+export function compile(fileNames: string[], compilerOptions: ts.CompilerOptions): ResultTsc {
+  const program = ts.createProgram(fileNames, compilerOptions)
   const emitResult = program.emit()
+
+  const fileErrors: ErrorTs[] = []
+  const otherErrors: string[] = []
 
   const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics)
 
@@ -13,13 +29,23 @@ export function compile(fileNames: string[], options: ts.CompilerOptions): void 
       const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!)
       const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')
       info(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`)
+      fileErrors.push({
+        fileName: diagnostic.file.fileName,
+        line: line + 1,
+        column: character + 1,
+        message
+      })
     } else {
-      info(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'))
+      otherErrors.push(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'))
     }
 
   }
 
   const exitCode = emitResult.emitSkipped ? 1 : 0
   info(`Process tsc exiting with code '${exitCode}'.`)
-  process.exit(exitCode)
+  return {
+    fileErrors,
+    otherErrors,
+    exitCode
+  }
 }
