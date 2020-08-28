@@ -10,7 +10,7 @@ inputs:
     default: '.'
   config-path:
     description: "Path of tsconfig file. default is ."
-    default: '.'
+    default: './tsconfig.json'
 runs:
   using: 'node12'
   main: 'dist/index.js'
