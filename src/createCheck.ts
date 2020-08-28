@@ -23,10 +23,10 @@ type CheckUpdater = (details: DetailsCheck) => Promise<void>
 /*
  * create a check and return a function that updates(completes) it
  */
-export async function createCheck(octokit: Octokit, context: Context): Promise<CheckUpdater> {
+export async function createCheck(octokit: Octokit, context: Context, checkName: string): Promise<CheckUpdater> {
     const check = await octokit.checks.create({
         ...context.repo,
-        name: 'Compressed Size',
+        name: checkName,
         head_sha: context.payload.pull_request!.head.sha,
         status: 'in_progress'
     })

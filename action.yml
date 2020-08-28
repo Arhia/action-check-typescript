@@ -14,6 +14,8 @@ inputs:
   config-path:
     description: "Path of tsconfig file. default is '.'"
     default: './tsconfig.json'
+  use-check:
+    description: 'Report status as a CI Check'
 runs:
   using: 'node12'
   main: 'dist/index.js'

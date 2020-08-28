@@ -141,24 +141,27 @@ async function run(): Promise<void> {
     endGroup()
 
     const isPrOk = !errorsInPr.length
-    const finish = await createCheck(octokit, context)
 
-    if (isPrOk) {
-      await finish({
-        conclusion: 'success',
-        output: {
-          title: `Check tsc errors`,
-          summary: `No tsc error in the PR files.`
-        }
-      })
-    } else {
-      await finish({
-        conclusion: 'failure',
-        output: {
-          title: `Check tsc errors`,
-          summary: `${errorsInPr.length} tsc error in the PR files.`
-        }
-      })
+    if (args.useCheck) {
+      const finish = await createCheck(octokit, context, "Check ts errors")
+
+      if (isPrOk) {
+        await finish({
+          conclusion: 'success',
+          output: {
+            title: `No tsc error in the PR files.`,
+            summary: `No tsc error in the PR files.`
+          }
+        })
+      } else {
+        await finish({
+          conclusion: 'failure',
+          output: {
+            title: `${errorsInPr.length} tsc error in the PR files.`,
+            summary: `${errorsInPr.length} tsc error in the PR files.`
+          }
+        })
+      }
     }
 
   } catch (errorRun) {

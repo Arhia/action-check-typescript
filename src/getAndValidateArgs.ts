@@ -5,6 +5,7 @@ type Args = {
   directory: string
   configPath: string
   filesChanged: string
+  useCheck: boolean
 }
 
 export function getAndValidateArgs(): Args {
@@ -12,7 +13,8 @@ export function getAndValidateArgs(): Args {
     repoToken: getInput('repo-token', { required: true }),
     directory: getInput('directory'),
     configPath: getInput('config-path'),
-    filesChanged: getInput('files-changed')
+    filesChanged: getInput('files-changed'),
+    useCheck: getInput('use-check').trim() === 'true' ? true : false
   }
 
   return args
