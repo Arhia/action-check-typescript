@@ -6,13 +6,13 @@ inputs:
     description: 'Token for the repository. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
     required: true
   directory:
-    description: "Directory where to run install and build. Default is ."
+    description: "Directory where to run install and build. Default is '.'"
     default: '.'
   files-changed:
-    description: "List of files changed in the current PR (separated by space)"
+    description: "List of files changed in the current PR (separated by space), use action 'futuratrepadeira/changed-files' for that"
     default: ''
   config-path:
-    description: "Path of tsconfig file. default is ."
+    description: "Path of tsconfig file. default is '.'"
     default: './tsconfig.json'
 runs:
   using: 'node12'
