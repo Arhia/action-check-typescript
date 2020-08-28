@@ -11,7 +11,7 @@ interface Cfg {
 export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInPr, newErrorsInPr }: Cfg): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
-    let s = ``
+    let s = `### Typescript`
 
     if (!errorsInProjectAfter.length) {
         s += `- No Typescript error in the project ! 🎉  \n`
@@ -23,15 +23,17 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         return s
     }
 
-    s += `${errorsInProjectAfter.length} Typescript errors detected in the project 😟.  \n`
+    s += `- ${errorsInProjectAfter.length} Typescript errors detected in the project 😟.  \n`
     if (delta < 0) {
         s += `- You have remove ${-delta} errors in the code 👏  \n`
         s += BLANK_LINE
-    } else {
+    } else if (delta > 0) {
         s += `- You have added ${delta} errors in the code 😥  \n`
         s += BLANK_LINE
     }
     s += getListOfErrors(`Details of errors in project after this PR`, errorsInProjectAfter)
+    s += BLANK_LINE
+    s += BLANK_LINE
 
     if (!errorsInPr.length) {
         s += `- No Typescript error in files changed in the PR ! 🎉 \n`
@@ -68,7 +70,7 @@ function getListOfErrors(title: string, errors: ErrorParsed[], thresholdCollapse
         s += BLANK_LINE
         s += BLANK_LINE
     } else {
-        s += `- **${title}**  \n`
+        s += `**${title}**  \n`
         s += BLANK_LINE
     }
 

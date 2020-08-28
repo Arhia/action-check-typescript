@@ -85,7 +85,7 @@ async function run(): Promise<void> {
 
     startGroup(`[base branch] compile ts files`)
 
-    checkoutAndInstallBaseBranch({
+    await checkoutAndInstallBaseBranch({
       installScript,
       payload: context.payload,
       execOptions
@@ -125,7 +125,12 @@ async function run(): Promise<void> {
 
     const comment = {
       ...commentInfo,
-      body: getBodyComment({ errorsInProjectBefore: errorsProjectBase, errorsInProjectAfter: errorsProjectCurrent, errorsInPr, newErrorsInPr })
+      body: getBodyComment({
+        errorsInProjectBefore: errorsProjectBase,
+        errorsInProjectAfter: errorsProjectCurrent,
+        errorsInPr,
+        newErrorsInPr
+      })
     }
 
     try {
