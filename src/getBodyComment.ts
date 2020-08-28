@@ -36,12 +36,12 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     if (!errorsInPr.length) {
         s += `- No Typescript error in files changed in the PR ! 🎉 \n`
         s += BLANK_LINE
-        return s
+    } else {
+        s += `- ${errorsInPr.length} Typescript errors detected in the modified files.  \n`
+        s += BLANK_LINE
+        s += getListOfErrors(`Details of errors in changed files`, errorsInPr)
+        s += BLANK_LINE
     }
-
-    s += `- ${errorsInPr.length} Typescript errors detected in the modified files.  \n`
-    s += BLANK_LINE
-    s += getListOfErrors(`Details of errors in changed files`, errorsInPr)
 
     if (newErrorsInPr.length > 0) {
         s += `${newErrorsInPr.length} new errors added (nb : new errors can be just errors with different locations)\n`
@@ -49,6 +49,10 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         s += getListOfErrors(`Details of new errors`, newErrorsInPr)
         s += BLANK_LINE
     }
+
+    s += BLANK_LINE
+    s += BLANK_LINE
+    s += '<a href="https://github.com/Arhia/action-check-typescript"><sub>Arhia/action-check-typescript</sub></a>'
 
     return s
 
