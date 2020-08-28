@@ -11,44 +11,49 @@ interface Cfg {
 export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInPr, newErrorsInPr }: Cfg): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
-    let s = `### Typescript`
+    let s = `## Typescript  \n`
 
-    if (!errorsInProjectAfter.length) {
-        s += `- No Typescript error in the project ! 🎉  \n`
+    const areStillErrors = !!errorsInProjectAfter.length
+
+    if (areStillErrors) {
+        s += `- ${errorsInProjectAfter.length} Typescript errors detected in all the codebase 😟.  \n`
+        if (delta < 0) {
+            s += `### - You have remove ${-delta} errors with this PR 👏  \n`
+            s += BLANK_LINE
+        } else if (delta > 0) {
+            s += `### - You have added ${delta} errors whith this PR 😥  \n`
+            s += BLANK_LINE
+        }
+    }
+
+    if (!areStillErrors) {
+        s += `### - No Typescript error in the codebase ! 🎉  \n`
         s += BLANK_LINE
         if (delta < 0) {
-            s += `- You have remove ${-delta} Typescript errors in the code 💪  \n`
+            s += `### - You have remove ${-delta} Typescript errors with this PR 💪  \n`
             s += BLANK_LINE
         }
         return s
     }
 
-    s += `- ${errorsInProjectAfter.length} Typescript errors detected in the project 😟.  \n`
-    if (delta < 0) {
-        s += `- You have remove ${-delta} errors in the code 👏  \n`
-        s += BLANK_LINE
-    } else if (delta > 0) {
-        s += `- You have added ${delta} errors in the code 😥  \n`
-        s += BLANK_LINE
-    }
-    s += getListOfErrors(`Details of errors in project after this PR`, errorsInProjectAfter)
+    s += getListOfErrors(`Details`, errorsInProjectAfter)
     s += BLANK_LINE
     s += BLANK_LINE
 
     if (!errorsInPr.length) {
-        s += `- No Typescript error in files changed in the PR ! 🎉 \n`
+        s += `### - No Typescript error in files changed in this PR ! 🎉 \n`
         s += BLANK_LINE
     } else {
-        s += `- ${errorsInPr.length} Typescript errors detected in the modified files.  \n`
+        s += `### - ${errorsInPr.length} Typescript errors detected in the modified files.  \n`
         s += BLANK_LINE
-        s += getListOfErrors(`Details of errors in changed files`, errorsInPr)
+        s += getListOfErrors(`Details`, errorsInPr)
         s += BLANK_LINE
     }
 
     if (newErrorsInPr.length > 0) {
         s += `${newErrorsInPr.length} new errors added (nb : new errors can be just errors with different locations)\n`
         s += BLANK_LINE
-        s += getListOfErrors(`Details of new errors`, newErrorsInPr)
+        s += getListOfErrors(`Details`, newErrorsInPr)
         s += BLANK_LINE
     }
 
@@ -60,7 +65,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
 }
 
-function getListOfErrors(title: string, errors: ErrorParsed[], thresholdCollapse = 5): string {
+function getListOfErrors(title: string, errors: ErrorParsed[], thresholdCollapse = 0): string {
 
     const shouldUseCollapsible = errors.length > thresholdCollapse
     let s = ``
