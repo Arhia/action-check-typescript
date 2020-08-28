@@ -20,7 +20,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         return s
     }
 
-    s = `${errorsInProjectAfter.length} Typescript errors detected in the project 😟.  \n`
+    s += `${errorsInProjectAfter.length} Typescript errors detected in the project 😟.  \n`
     if (delta < 0) {
         s += `You have remove ${-delta} errors in the code 👏`
     } else {
@@ -33,15 +33,17 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     }
 
     if (!errorsInPr.length) {
-        s = `No Typescript error in files changed in the PR ! 🎉`
+        s += `No Typescript error in files changed in the PR ! 🎉 \n`
         return s
     }
 
-    s = `${errorsInPr.length} Typescript errors detected in the modified files.  \n`
+    s += `${errorsInPr.length} Typescript errors detected in the modified files.  \n`
     s += `<details><summary>Details of errors</summary>  \n${getListOfErrors(errorsInPr)}</details>  \n`
 
-    s = `${newErrorsInPr.length} new errors added (nb : new errors can be just errors with different locations)\n`
-    s += `<details><summary>Details of errors</summary>  \n${getListOfErrors(newErrorsInPr)}</details>  \n`
+    if (newErrorsInPr.length > 0) {
+        s += `${newErrorsInPr.length} new errors added (nb : new errors can be just errors with different locations)\n`
+        s += `<details><summary>Details of errors</summary>  \n${getListOfErrors(newErrorsInPr)}</details>  \n`
+    }
 
     return s
 

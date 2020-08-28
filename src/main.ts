@@ -125,7 +125,7 @@ async function run(): Promise<void> {
 
     const comment = {
       ...commentInfo,
-      body: getBodyComment({ errorsInProjectBefore: errorsProjectCurrent, errorsInProjectAfter: errorsProjectBase, errorsInPr, newErrorsInPr })
+      body: getBodyComment({ errorsInProjectBefore: errorsProjectBase, errorsInProjectAfter: errorsProjectCurrent, errorsInPr, newErrorsInPr })
     }
 
     try {
