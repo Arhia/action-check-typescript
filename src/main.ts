@@ -36,6 +36,9 @@ async function run(): Promise<void> {
     }
 
     const octokit = getOctokit(args.repoToken)
+    const hereIsAUnusedVariableToHaveAnError
+
+    //const client = github.getOctokit(args.repoToken)
 
     const pr = github.context.payload.pull_request
 
