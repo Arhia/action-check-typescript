@@ -14,6 +14,13 @@ import { exec } from '@actions/exec'
 import { filterErrors } from './filterErrors'
 import { formatOneError } from './formatOneError'
 
+interface PullRequest {
+  number: number;
+  html_url?: string
+  body?: string
+  changed_files: number
+}
+
 type GithubClient = InstanceType<typeof GitHub>
 
 async function run(): Promise<void> {
@@ -29,7 +36,6 @@ async function run(): Promise<void> {
     }
 
     const pr = github.context.payload.pull_request
-
 
     if (!pr) {
       throw Error('Could not retrieve PR information. Only "pull_request" triggered workflows are currently supported.')
@@ -83,6 +89,7 @@ async function run(): Promise<void> {
     endGroup()
 
     const filesChanged = pr.repository.pullRequest.files.nodes
+    info(`filesChanged : ${JSON.stringify(filesChanged)}`)
     const errorsRelatedToChangedFiles = filterErrors(resultTsc.fileErrors, filesChanged)
     info(`[current branch] number of typescript errors for changed files: ${errorsRelatedToChangedFiles.length}`)
     endGroup()
