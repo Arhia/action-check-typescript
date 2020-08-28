@@ -13,6 +13,7 @@ import { getFilesToCompile } from './getFilesToCompile'
 import { exec } from '@actions/exec'
 import { filterErrors } from './filterErrors'
 import { formatOneError } from './formatOneError'
+import { runTsc } from './runTsc'
 
 interface PullRequest {
   number: number;
@@ -80,8 +81,17 @@ async function run(): Promise<void> {
     info(`[current branch] files to compile : \n${fileNames.map(one => `${one}\n`)}`)
 
     startGroup(`[current branch] compile ts files`)
-    const resultTsc = compile(fileNames, compilerOptions)
+    //const resultTsc = compile(fileNames, compilerOptions)
 
+    const { output: tscOutput, error: execError } = await runTsc({
+      workingDir,
+      tsconfigPath
+    })
+
+    info(`output exec compiler: ${tscOutput}`)
+    info(`error exec compiler: ${execError}`)
+
+    /*
     const errorsRelatedToSourceCode = filterErrors(resultTsc.fileErrors, fileNames)
     info(`[current branch] number of typescript errors for all project files: ${errorsRelatedToSourceCode.length}`)
 
@@ -93,6 +103,7 @@ async function run(): Promise<void> {
     const errorsRelatedToChangedFiles = filterErrors(resultTsc.fileErrors, filesChanged)
     info(`[current branch] number of typescript errors for changed files: ${errorsRelatedToChangedFiles.length}`)
     endGroup()
+    */
 
   } catch (errorRun) {
     setFailed(errorRun.message)
