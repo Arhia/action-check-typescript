@@ -5,10 +5,10 @@ export function compareErrors(errorsBefore: ErrorParsed[], errorsAfter: ErrorPar
     return errorsAfter.reduce((newErrors, errAfter) => {
         let isNew = true
         const errorsInSameFile = errorsBefore.filter(err => err.file === errAfter.file)
-        const isStrictlySame = errorsInSameFile.find(err => {
+        const isStrictlySameExisting = errorsInSameFile.find(err => {
             return err.code === errAfter.code && err.severity === errAfter.severity && errAfter.message === err.message && err.line === errAfter.line && err.column === errAfter.column
         })
-        if (isStrictlySame) {
+        if (isStrictlySameExisting) {
             isNew = false
         }
         if (isNew) {
