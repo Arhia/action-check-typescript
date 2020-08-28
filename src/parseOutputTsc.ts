@@ -46,7 +46,6 @@ export const tscMatcher: Matcher = {
 
 export function parseTscErrorLine(str: string, matcher: Matcher): ErrorParsed {
 
-    console.log(`on a reçu la chaine ${str}`)
     let arr: string[] = []
     try {
         arr = str.match(matcher.regexp) || []

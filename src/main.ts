@@ -72,26 +72,12 @@ async function run(): Promise<void> {
     const config = parseTsConfigFile(tsconfigPath)
     info(`[current branch] config ${JSON.stringify(config)}`)
 
-    /*
-    const fileNames = getFilesToCompile({
-      workingDir,
-      rootDir: config.compilerOptions.rootDir,
-      include: config.include,
-      exclude: config.exclude
-    })
-
-    info(`[current branch] files to compile : \n${fileNames.map(one => `${one}\n`)}`)
-    */
-
     startGroup(`[current branch] compile ts files`)
 
-    const { output: tscOutputCurrent, error: execErrorCurrent } = await runTsc({
+    const { output: tscOutputCurrent } = await runTsc({
       workingDir,
       tsconfigPath
     })
-
-    info(`output exec compiler: ${tscOutputCurrent}`)
-    info(`error exec compiler: ${execErrorCurrent}`)
 
     const errorsProjectCurrent = parseOutputTsc(tscOutputCurrent)
 
@@ -105,36 +91,14 @@ async function run(): Promise<void> {
       execOptions
     })
 
-    const { output: tscOutputBase, error: execErrorBase } = await runTsc({
+    const { output: tscOutputBase } = await runTsc({
       workingDir,
       tsconfigPath
     })
 
-    info(`output exec compiler: ${tscOutputBase}`)
-    info(`error exec compiler: ${execErrorBase}`)
-
-    const errorsProjectBase = parseOutputTsc(tscOutputCurrent)
+    const errorsProjectBase = parseOutputTsc(tscOutputBase)
 
     endGroup()
-
-    const filesChangedNodes = pr.repository.pullRequest.files.nodes
-
-    info(`pr.repository.pullRequest.files.nodes ${JSON.stringify(filesChangedNodes)}`)
-    /*
-    const errorsRelatedToSourceCode = filterErrors(resultTsc.fileErrors, fileNames)
-    info(`[current branch] number of typescript errors for all project files: ${errorsRelatedToSourceCode.length}`)
-    */
-
-    /*
-    startGroup(`[current branch] project errors \n${errorsRelatedToSourceCode.map(formatOneError)}`)
-    endGroup()
-
-    const filesChanged = pr.repository.pullRequest.files.nodes
-    info(`filesChanged : ${JSON.stringify(filesChanged)}`)
-    const errorsRelatedToChangedFiles = filterErrors(resultTsc.fileErrors, filesChanged)
-    info(`[current branch] number of typescript errors for changed files: ${errorsRelatedToChangedFiles.length}`)
-    endGroup()
-    */
 
     /*
     const finish = await createCheck(octokit, context)
@@ -182,6 +146,8 @@ async function run(): Promise<void> {
         info(`Error creating PR review ${errCreateComment.message}`)
       }
     }
+
+    endGroup()
 
 
   } catch (errorRun) {
