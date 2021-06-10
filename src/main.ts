@@ -8,12 +8,11 @@ import { parseTsConfigFileToCompilerOptions } from './parseTsConfigFileToCompile
 import { getAndValidateArgs } from './getAndValidateArgs'
 import { parseTsConfigFile } from './parseTsConfigFile'
 import { exec } from '@actions/exec'
-import { runTsc } from './runTsc'
-import { parseOutputTsc } from './parseOutputTsc'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
 import { filterErrors } from './filterErrors'
 import { compareErrors } from './compareErrors'
+import { compileTsFiles } from './compileTsFiles'
 
 interface PullRequest {
   number: number;
@@ -73,12 +72,17 @@ async function run(): Promise<void> {
 
     startGroup(`[current branch] compile ts files`)
 
-    const { output: tscOutputCurrent } = await runTsc({
-      workingDir,
-      tsconfigPath
+    const rootDir = `.`
+    const rootPath = path.resolve(rootDir)
+    const srcDir = `server`
+
+    const fileNames: string[] = []
+
+    compileTsFiles({
+      fileNames,
+      rootPath
     })
 
-    const errorsProjectCurrent = parseOutputTsc(tscOutputCurrent)
 
     endGroup()
 
@@ -90,12 +94,11 @@ async function run(): Promise<void> {
       execOptions
     })
 
-    const { output: tscOutputBase } = await runTsc({
-      workingDir,
-      tsconfigPath
+    const fileNamesBaseBranch: string[] = []
+    const errorsBaseBranch = compileTsFiles({
+      rootPath,
+      fileNames: fileNamesBaseBranch
     })
-
-    const errorsProjectBase = parseOutputTsc(tscOutputBase)
 
     endGroup()
 
