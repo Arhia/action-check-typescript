@@ -1,5 +1,3 @@
-import { ErrorParsed } from './parseOutputTsc'
-
 const BLANK_LINE = '  \n'
 interface Cfg {
     errorsInProjectBefore: ErrorParsed[]
