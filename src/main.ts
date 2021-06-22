@@ -110,8 +110,8 @@ async function run(): Promise<void> {
     const comment = {
       ...commentInfo,
       body: getBodyComment({
-        errorsInProjectBefore: errorsProjectBase,
-        errorsInProjectAfter: errorsProjectCurrent,
+        errorsInProjectBefore: errorsBaseBranch,
+        errorsInProjectAfter: errorsPr,
         errorsInPr,
         newErrorsInPr
       })
