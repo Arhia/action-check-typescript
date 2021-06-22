@@ -13,8 +13,8 @@ export function getAndValidateArgs(): Args {
     repoToken: getInput('repo-token', { required: true }),
     directory: getInput('directory'),
     tsConfigPath: getInput('ts-config-path'),
-    filesChanged: getInput('files-changed'),
-    lineNumbers: getInput('line-numbers'),
+    filesChanged: getInput('files-changed', { required: true }),
+    lineNumbers: getInput('line-numbers', { required: true }),
     useCheck: getInput('use-check').trim() === 'true' ? true : false
   }
 
