@@ -27,5 +27,7 @@ jobs:
       - uses: ./
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          files-changed: ${{steps.files.outputs.files_updated}} ${{steps.files.outputs.files_created}}
+          files-changed: ${{steps.files.outputs.files_updated}}
+          files-added: ${{steps.files.outputs.files_created}}
+          files-deleted: ${{steps.files.outputs.files_deleted}}
           line-numbers: ${{steps.diff.outputs.lineNumbers}}

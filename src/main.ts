@@ -101,10 +101,21 @@ async function run(): Promise<void> {
       issue_number: context.payload.pull_request!.number
     }
 
-    const newErrorsInPr = compareErrors({
+    const resultCompareErrors = compareErrors({
       errorsBefore: errorsBaseBranch,
       errorsAfter: errorsPr,
-      filesModifs: args.filesChanged
+      filesChanged: args.filesChanged,
+      filesAdded: args.filesAdded,
+      filesDeleted: args.filesDeleted,
+      lineNumbers: args.lineNumbers
+    })
+
+    const errorsInModifiedFiles = errorsPr.filter(err => {
+      return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
+    })
+
+    const newErrorsInModifiedFiles = resultCompareErrors.errorsAdded.filter(err => {
+      return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
     })
 
     const comment = {
@@ -112,8 +123,9 @@ async function run(): Promise<void> {
       body: getBodyComment({
         errorsInProjectBefore: errorsBaseBranch,
         errorsInProjectAfter: errorsPr,
-        errorsInPr,
-        newErrorsInPr
+        newErrorsInProject: resultCompareErrors.errorsAdded,
+        errorsInModifiedFiles,
+        newErrorsInModifiedFiles
       })
     }
 
@@ -137,7 +149,7 @@ async function run(): Promise<void> {
     }
     endGroup()
 
-    const isPrOk = !errorsInPr.length
+    const isPrOk = !errorsInModifiedFiles.length
 
     if (args.useCheck) {
       const finish = await createCheck(octokit, context, "Check ts errors")
@@ -154,8 +166,8 @@ async function run(): Promise<void> {
         await finish({
           conclusion: 'failure',
           output: {
-            title: `${errorsInPr.length} tsc error in the PR files.`,
-            summary: `${errorsInPr.length} tsc error in the PR files.`
+            title: `${errorsInModifiedFiles.length} tsc error in the PR files.`,
+            summary: `${errorsInModifiedFiles.length} tsc error in the PR files.`
           }
         })
       }

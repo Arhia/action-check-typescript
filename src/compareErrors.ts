@@ -1,28 +1,19 @@
 import { ErrorTs } from "./tsc/compileTsFiles"
 
-enum TYPE_MODIF {
-    MODIF = 1,
-    AJOUT = 2,
-    SUPPRESSION = 3
-}
-
 type LineModif = {
     lineNumber: number
     added: number
     removed: number
 }
 
-type FileModif = {
-    fileName: string
-    typeModif: TYPE_MODIF
-    lineModifs: LineModif[]
-}
-
 
 type Input = {
     errorsBefore: ErrorTs[]
     errorsAfter: ErrorTs[]
-    filesModifs: FileModif[]
+    filesChanged: string[]
+    filesAdded: string[]
+    filesDeleted: string[]
+    lineNumbers: { path: string, added: number[], removed: number[] }[]
 }
 
 type Result = {
@@ -34,7 +25,7 @@ type Result = {
 /**
  * A partir des erreurs ts de la base branche
  */
-export function compareErrors({ errorsBefore, errorsAfter, filesModifs }: Input): Result {
+export function compareErrors({ errorsBefore, errorsAfter, filesChanged, filesDeleted, filesAdded, lineNumbers }: Input): Result {
 
     const errorsAdded: ErrorTs[] = []
     const errorsRemoved: ErrorTs[] = []
