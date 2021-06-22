@@ -6,6 +6,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Get diff lines
+        id: diff
+        uses: Equip-Collaboration/diff-line-numbers@v1
+        with:
+          include: '["\\.ts$"]'
+      - name: Print line numbers of changed lines
+        run: echo Line numbers = ${{ toJSON(steps.diff.outputs.lineNumbers) }}
       - name: Detecting files changed
         id: files
         uses: futuratrepadeira/changed-files@v3.2.1
@@ -21,3 +28,4 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           files-changed: ${{steps.files.outputs.files_updated}} ${{steps.files.outputs.files_created}}
+          line-numbers: ${{steps.diff.outputs.lineNumbers}}

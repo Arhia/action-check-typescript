@@ -12,14 +12,6 @@ const defaultTscOptions = {
     ]
 }
 
-type Options = {
-    keepOnlyRelatedFiles: boolean
-}
-
-const defaultOptions: Options = {
-    keepOnlyRelatedFiles: true
-}
-
 export type ErrorTs = {
     fileName: string
     fileNameResolved: string
@@ -30,24 +22,19 @@ export type ErrorTs = {
 }
 
 type Input = {
+    /**  */
     rootPath: string
-    fileNames: string[]
+    /** paths à partir desquels lancer tsc, par exemple : ./server/server/ts */
+    rootNames: string[]
     tsOptions?: ts.CompilerOptions
-    options?: Options
 }
 
-export function compileTsFiles({ fileNames, rootPath, tsOptions, options }: Input): ErrorTs[] {
+export function compileTsFiles({ rootNames, rootPath, tsOptions }: Input): ErrorTs[] {
 
-    const rootNames = [rootPath].concat(fileNames)
-    const program = ts.createProgram(fileNames, {
+    const program = ts.createProgram(rootNames, {
         ...defaultTscOptions,
         ...(tsOptions ?? {})
     })
-
-    const finalOptions: Options = {
-        ...defaultOptions,
-        ...(options ?? {})
-    }
 
     const emitResult = program.emit()
 
@@ -83,43 +70,5 @@ export function compileTsFiles({ fileNames, rootPath, tsOptions, options }: Inpu
         }
     })
 
-    const finalErrors = finalOptions.keepOnlyRelatedFiles ? errors.filter(err => {
-        return fileNames.includes(err.fileName)
-    }) : errors
-
-    const errorsByFile: {
-        fileName: string
-        errors: ErrorTs[]
-    }[] = []
-
-    finalErrors.forEach(err => {
-        const errByFileFound = errorsByFile.find(o => o.fileName === err.fileName)
-        if (errByFileFound) {
-            errByFileFound.errors.push(err)
-        } else {
-            errorsByFile.push({
-                fileName: err.fileName,
-                errors: [err]
-            })
-        }
-    })
-
-    if (errorsByFile.length) {
-        console.warn("-".repeat(100))
-        console.warn(`${finalErrors.length} erreurs ont été trouvées dans ${fileNames.length} fichiers :`)
-        console.warn("-".repeat(100))
-        errorsByFile.forEach(errByFile => {
-            console.warn(`Fichier ${errByFile.fileName} : ${errByFile.errors.length} erreurs détectées :`)
-            errByFile.errors.forEach(err => {
-                console.log(`(${err.line},${err.character}) : ${err.message}`)
-            })
-        })
-    }
-
-    /*
-    const exitCode = finalErrors.length > 0 ? 1 : 0
-    console.log(`Process exiting with code '${exitCode}'.`)
-    process.exit(exitCode)
-    */
-    return finalErrors
+    return errors
 }

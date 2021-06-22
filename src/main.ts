@@ -4,15 +4,13 @@ import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
-import { parseTsConfigFileToCompilerOptions } from './parseTsConfigFileToCompilerOptions'
+import { parseTsConfigFileToCompilerOptions } from './tsc/parseTsConfigFileToCompilerOptions'
 import { getAndValidateArgs } from './getAndValidateArgs'
-import { parseTsConfigFile } from './parseTsConfigFile'
 import { exec } from '@actions/exec'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
-import { filterErrors } from './filterErrors'
 import { compareErrors } from './compareErrors'
-import { compileTsFiles } from './compileTsFiles'
+import { compileTsFiles } from './tsc/compileTsFiles'
 
 interface PullRequest {
   number: number;
@@ -27,7 +25,7 @@ async function run(): Promise<void> {
     const workingDir = path.join(process.cwd(), args.directory)
     info(`working directory: ${workingDir}`)
 
-    const tsconfigPath = path.join(workingDir, args.configPath)
+    const tsconfigPath = path.join(workingDir, args.tsConfigPath)
     info(`tsconfigPath: ${tsconfigPath}`)
     if (!fs.existsSync(tsconfigPath)) {
       throw new Error(`could not find tsconfig.json at: ${tsconfigPath}`)
@@ -67,22 +65,16 @@ async function run(): Promise<void> {
 
     info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
 
-    const config = parseTsConfigFile(tsconfigPath)
-    info(`[current branch] config ${JSON.stringify(config)}`)
-
     startGroup(`[current branch] compile ts files`)
 
     const rootDir = `.`
     const rootPath = path.resolve(rootDir)
-    const srcDir = `server`
 
-    const fileNames: string[] = []
-
-    compileTsFiles({
-      fileNames,
-      rootPath
+    const errorsPr = compileTsFiles({
+      rootNames: ['./server/server.ts'],
+      rootPath,
+      tsOptions: compilerOptions
     })
-
 
     endGroup()
 
@@ -94,10 +86,10 @@ async function run(): Promise<void> {
       execOptions
     })
 
-    const fileNamesBaseBranch: string[] = []
     const errorsBaseBranch = compileTsFiles({
       rootPath,
-      fileNames: fileNamesBaseBranch
+      rootNames: ['./server/server.ts'],
+      tsOptions: compilerOptions
     })
 
     endGroup()
@@ -109,9 +101,11 @@ async function run(): Promise<void> {
       issue_number: context.payload.pull_request!.number
     }
 
-    const errorsInPr = filterErrors(errorsProjectCurrent, args.filesChanged)
-
-    const newErrorsInPr = compareErrors(errorsProjectBase, errorsProjectCurrent)
+    const newErrorsInPr = compareErrors({
+      errorsBefore: errorsBaseBranch,
+      errorsAfter: errorsPr,
+      filesModifs: args.filesChanged
+    })
 
     const comment = {
       ...commentInfo,
