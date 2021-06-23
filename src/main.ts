@@ -96,12 +96,7 @@ async function run(): Promise<void> {
 
     endGroup()
 
-    startGroup(`Creating comment`)
-
-    const commentInfo = {
-      ...context.repo,
-      issue_number: context.payload.pull_request!.number
-    }
+    startGroup(`Comparing errors`)
 
     const resultCompareErrors = compareErrors({
       errorsBefore: errorsBaseBranch,
@@ -121,6 +116,15 @@ async function run(): Promise<void> {
     const newErrorsInModifiedFiles = resultCompareErrors.errorsAdded.filter(err => {
       return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
     })
+
+    endGroup()
+
+    startGroup(`Creating comment`)
+
+    const commentInfo = {
+      ...context.repo,
+      issue_number: context.payload.pull_request!.number
+    }
 
     const comment = {
       ...commentInfo,
