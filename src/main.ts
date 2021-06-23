@@ -4,15 +4,13 @@ import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
-import { parseTsConfigFileToCompilerOptions } from './parseTsConfigFileToCompilerOptions'
+import { parseTsConfigFileToCompilerOptions } from './tsc/parseTsConfigFileToCompilerOptions'
 import { getAndValidateArgs } from './getAndValidateArgs'
-import { parseTsConfigFile } from './parseTsConfigFile'
 import { exec } from '@actions/exec'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
-import { filterErrors } from './filterErrors'
 import { compareErrors } from './compareErrors'
-import { compileTsFiles } from './compileTsFiles'
+import { compileTsFiles } from './tsc/compileTsFiles'
 
 interface PullRequest {
   number: number;
@@ -27,7 +25,7 @@ async function run(): Promise<void> {
     const workingDir = path.join(process.cwd(), args.directory)
     info(`working directory: ${workingDir}`)
 
-    const tsconfigPath = path.join(workingDir, args.configPath)
+    const tsconfigPath = path.join(workingDir, args.tsConfigPath)
     info(`tsconfigPath: ${tsconfigPath}`)
     if (!fs.existsSync(tsconfigPath)) {
       throw new Error(`could not find tsconfig.json at: ${tsconfigPath}`)
@@ -67,22 +65,18 @@ async function run(): Promise<void> {
 
     info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
 
-    const config = parseTsConfigFile(tsconfigPath)
-    info(`[current branch] config ${JSON.stringify(config)}`)
-
     startGroup(`[current branch] compile ts files`)
 
     const rootDir = `.`
     const rootPath = path.resolve(rootDir)
-    const srcDir = `server`
 
-    const fileNames: string[] = []
-
-    compileTsFiles({
-      fileNames,
-      rootPath
+    const errorsPr = compileTsFiles({
+      rootNames: ['./server/server.ts'],
+      rootPath,
+      tsOptions: compilerOptions
     })
 
+    info(`[current branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
 
     endGroup()
 
@@ -94,10 +88,33 @@ async function run(): Promise<void> {
       execOptions
     })
 
-    const fileNamesBaseBranch: string[] = []
     const errorsBaseBranch = compileTsFiles({
       rootPath,
-      fileNames: fileNamesBaseBranch
+      rootNames: ['./server/server.ts'],
+      tsOptions: compilerOptions
+    })
+
+    endGroup()
+
+    startGroup(`Comparing errors`)
+
+    const resultCompareErrors = compareErrors({
+      errorsBefore: errorsBaseBranch,
+      errorsAfter: errorsPr,
+      filesChanged: args.filesChanged,
+      filesAdded: args.filesAdded,
+      filesDeleted: args.filesDeleted,
+      lineNumbers: args.lineNumbers
+    })
+
+    info(`Contenu de resultCompareErrors : ${JSON.stringify(resultCompareErrors)}`)
+
+    const errorsInModifiedFiles = errorsPr.filter(err => {
+      return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
+    })
+
+    const newErrorsInModifiedFiles = resultCompareErrors.errorsAdded.filter(err => {
+      return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
     })
 
     endGroup()
@@ -109,17 +126,14 @@ async function run(): Promise<void> {
       issue_number: context.payload.pull_request!.number
     }
 
-    const errorsInPr = filterErrors(errorsProjectCurrent, args.filesChanged)
-
-    const newErrorsInPr = compareErrors(errorsProjectBase, errorsProjectCurrent)
-
     const comment = {
       ...commentInfo,
       body: getBodyComment({
-        errorsInProjectBefore: errorsProjectBase,
-        errorsInProjectAfter: errorsProjectCurrent,
-        errorsInPr,
-        newErrorsInPr
+        errorsInProjectBefore: errorsBaseBranch,
+        errorsInProjectAfter: errorsPr,
+        newErrorsInProject: resultCompareErrors.errorsAdded,
+        errorsInModifiedFiles,
+        newErrorsInModifiedFiles
       })
     }
 
@@ -143,7 +157,7 @@ async function run(): Promise<void> {
     }
     endGroup()
 
-    const isPrOk = !errorsInPr.length
+    const isPrOk = !errorsInModifiedFiles.length
 
     if (args.useCheck) {
       const finish = await createCheck(octokit, context, "Check ts errors")
@@ -160,8 +174,8 @@ async function run(): Promise<void> {
         await finish({
           conclusion: 'failure',
           output: {
-            title: `${errorsInPr.length} tsc error in the PR files.`,
-            summary: `${errorsInPr.length} tsc error in the PR files.`
+            title: `${errorsInModifiedFiles.length} tsc error in the PR files.`,
+            summary: `${errorsInModifiedFiles.length} tsc error in the PR files.`
           }
         })
       }

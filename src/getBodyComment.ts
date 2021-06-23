@@ -1,12 +1,16 @@
+import { ErrorTs } from "./tsc/compileTsFiles"
+
 const BLANK_LINE = '  \n'
-interface Cfg {
-    errorsInProjectBefore: ErrorParsed[]
-    errorsInProjectAfter: ErrorParsed[]
-    errorsInPr: ErrorParsed[]
-    newErrorsInPr: ErrorParsed[]
+
+type Input = {
+    errorsInProjectBefore: ErrorTs[]
+    errorsInProjectAfter: ErrorTs[]
+    newErrorsInProject: ErrorTs[]
+    errorsInModifiedFiles: ErrorTs[]
+    newErrorsInModifiedFiles: ErrorTs[]
 }
 
-export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInPr, newErrorsInPr }: Cfg): string {
+export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, newErrorsInProject, errorsInModifiedFiles, newErrorsInModifiedFiles }: Input): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
     let s = `## Tsc check  \n`
@@ -40,22 +44,21 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         return s
     }
 
-
-    if (!errorsInPr.length) {
+    if (!errorsInModifiedFiles.length) {
         s += `No Typescript error in files changed in this PR ! 🎉 \n`
         s += BLANK_LINE
     } else {
-        s += `**${errorsInPr.length} Typescript errors detected in the modified files.**  \n`
+        s += `**${errorsInModifiedFiles.length} Typescript errors detected in the modified files.**  \n`
         s += BLANK_LINE
-        s += getListOfErrors(`Details`, errorsInPr)
+        s += getListOfErrors(`Details`, errorsInModifiedFiles)
         s += BLANK_LINE
     }
 
-    if (newErrorsInPr.length > 0) {
-        s += `**${newErrorsInPr.length} new errors added**  \n`
-        s += `*nb : new errors can be just same errors but with different locations*`
+    if (newErrorsInModifiedFiles.length > 0) {
+        s += `**${newErrorsInModifiedFiles.length} new errors added**  \n`
+        s += `*note : sometimes, new errors can be just same errors but with different locations*`
         s += BLANK_LINE
-        s += getListOfErrors(`Details`, newErrorsInPr)
+        s += getListOfErrors(`Details`, newErrorsInModifiedFiles)
         s += BLANK_LINE
     }
 
@@ -67,7 +70,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
 }
 
-function getListOfErrors(title: string, errors: ErrorParsed[], thresholdCollapse = 0): string {
+function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 0): string {
 
     const shouldUseCollapsible = errors.length > thresholdCollapse
     let s = ``
@@ -84,7 +87,7 @@ function getListOfErrors(title: string, errors: ErrorParsed[], thresholdCollapse
     s += `\nFilename|Location|Message\n`
     s += `-- | -- | -- \n`
     s += errors.map(err => {
-        return `${err.file}|${err.line}, ${err.column}|${err.message}`
+        return `${err.fileNameResolved}|${err.line}, ${err.character}|${err.message}`
     }).join('\n')
 
 
