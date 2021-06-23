@@ -11,6 +11,14 @@ inputs:
   files-changed:
     description: "List of files changed in the current PR (separated by space), use action 'futuratrepadeira/changed-files' for that"
     default: ''
+  files-added:
+    description: "List of files added in the current PR (separated by space), use action 'futuratrepadeira/changed-files' for that"
+    default: ''
+  files-deleted:
+    description: "List of files deleted in the current PR (separated by space), use action 'futuratrepadeira/changed-files' for that"
+    default: ''
+  line-numbers:
+    description: "List of files with added and removed lines, use action 'Equip-Collaboration/diff-line-numbers' for that"
   config-path:
     description: "Path of tsconfig file. default is '.'"
     default: './tsconfig.json'
