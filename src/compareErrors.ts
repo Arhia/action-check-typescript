@@ -12,18 +12,12 @@ type Input = {
 
 type Result = {
     errorsAdded: ErrorTs[]
-    errorsRemoved: ErrorTs[]
-    errorsSame: ErrorTs[]
 }
 
 /**
  * A partir des erreurs ts de la base branche
  */
 export function compareErrors({ errorsBefore, errorsAfter, filesChanged, filesAdded, lineNumbers }: Input): Result {
-
-    const errorsAdded: ErrorTs[] = []
-    const errorsRemoved: ErrorTs[] = []
-    const errorsSame: ErrorTs[] = []
 
     /*
     on va déterminer numéro de ligne dans correspondant dans le fichier modifié dans la PR
@@ -55,7 +49,7 @@ export function compareErrors({ errorsBefore, errorsAfter, filesChanged, filesAd
         }
     })
 
-    errorsAfter.reduce((newErrors, errAfter) => {
+    const errorsAdded: ErrorTs[] = errorsAfter.reduce((newErrors, errAfter) => {
 
         const isErrorInNewFile = filesAdded.includes(errAfter.fileName)
         if (isErrorInNewFile) {
@@ -77,9 +71,7 @@ export function compareErrors({ errorsBefore, errorsAfter, filesChanged, filesAd
     }, [] as ErrorTs[])
 
     return {
-        errorsAdded,
-        errorsRemoved,
-        errorsSame
+        errorsAdded
     }
 
 }

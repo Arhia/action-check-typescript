@@ -112,6 +112,8 @@ async function run(): Promise<void> {
       lineNumbers: args.lineNumbers
     })
 
+    info(`Contenu de resultCompareErrors : ${JSON.stringify(resultCompareErrors)}`)
+
     const errorsInModifiedFiles = errorsPr.filter(err => {
       return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
     })
