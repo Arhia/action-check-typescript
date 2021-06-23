@@ -1,4 +1,4 @@
-import { info, startGroup, endGroup, setFailed } from '@actions/core'
+import { info, startGroup, endGroup, setFailed, warning, error } from '@actions/core'
 import * as path from 'path'
 import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
@@ -11,6 +11,7 @@ import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
 import { compareErrors } from './compareErrors'
 import { compileTsFiles } from './tsc/compileTsFiles'
+import { getFilesToCompile } from './getFilesToCompile'
 
 interface PullRequest {
   number: number;
@@ -70,8 +71,17 @@ async function run(): Promise<void> {
     const rootDir = `.`
     const rootPath = path.resolve(rootDir)
 
+    const fileNames = getFilesToCompile({
+      workingDir: '.',
+      include: ['**/*.ts'],
+      exclude: ['node_modules']
+    })
+    if (!fileNames.length) {
+      error(`[current branch] Aucun fichier trouvé correspondant aux patterns `)
+    }
+
     const errorsPr = compileTsFiles({
-      rootNames: ['./server/server.ts'],
+      rootNames: fileNames,
       rootPath,
       tsOptions: compilerOptions
     })
@@ -88,9 +98,17 @@ async function run(): Promise<void> {
       execOptions
     })
 
+    const fileNamesBase = getFilesToCompile({
+      workingDir: '.',
+      include: ['**/*.ts'],
+      exclude: ['node_modules']
+    })
+    if (!fileNamesBase.length) {
+      error(`[base branch] Aucun fichier trouvé correspondant aux patterns `)
+    }
     const errorsBaseBranch = compileTsFiles({
       rootPath,
-      rootNames: ['./server/server.ts'],
+      rootNames: fileNamesBase,
       tsOptions: compilerOptions
     })
 
