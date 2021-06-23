@@ -59,23 +59,32 @@ async function run(): Promise<void> {
     await exec(installScript, [], execOptions)
     endGroup()
 
+    startGroup(`[current branch] compile ts files`)
+
+    info(`[current branch] start parsing tsconfig file`)
+
     const compilerOptions = {
       ...parseTsConfigFileToCompilerOptions(tsconfigPath),
       noEmit: true
     }
 
-    info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
+    info(`[current branch] end parsing tsconfig file`)
 
-    startGroup(`[current branch] compile ts files`)
+    info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
 
     const rootDir = `.`
     const rootPath = path.resolve(rootDir)
+
+    info(`[current branch] start get files to compile`)
 
     const fileNames = getFilesToCompile({
       workingDir: '.',
       include: ['**/*.ts'],
       exclude: ['node_modules']
     })
+
+    info(`[current branch] end get files to compile`)
+
     if (!fileNames.length) {
       error(`[current branch] Aucun fichier trouvé correspondant aux patterns `)
     }
