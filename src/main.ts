@@ -76,6 +76,8 @@ async function run(): Promise<void> {
       tsOptions: compilerOptions
     })
 
+    info(`[current branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
+
     endGroup()
 
     startGroup(`[base branch] compile ts files`)
