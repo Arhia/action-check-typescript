@@ -28,7 +28,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, ne
             s += BLANK_LINE
         }
         s += `**${errorsInProjectAfter.length} Typescript errors detected in all the codebase 😟.**  \n`
-        s += getListOfErrors(`Details`, errorsInProjectAfter)
+        s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
         s += BLANK_LINE
         s += BLANK_LINE
 
@@ -88,6 +88,53 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 0
     s += `-- | -- | -- \n`
     s += errors.map(err => {
         return `${err.fileNameResolved}|${err.line}, ${err.character}|${err.message}`
+    }).join('\n')
+
+
+    if (shouldUseCollapsible) {
+        s += BLANK_LINE
+        s += `</details>  \n`
+    }
+
+    return s
+
+}
+
+function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 0): string {
+
+    const errorsByFile: {
+        fileName: string
+        errors: ErrorTs[]
+    }[] = []
+
+    errors.forEach(err => {
+        const errByFileFound = errorsByFile.find(o => o.fileName === err.fileName)
+        if (errByFileFound) {
+            errByFileFound.errors.push(err)
+        } else {
+            errorsByFile.push({
+                fileName: err.fileName,
+                errors: [err]
+            })
+        }
+    })
+
+    const shouldUseCollapsible = errorsByFile.length > thresholdCollapse
+    let s = ``
+
+    if (shouldUseCollapsible) {
+        s += `<details><summary>${title}</summary>  \n`
+        s += BLANK_LINE
+        s += BLANK_LINE
+    } else {
+        s += `${title}  \n`
+        s += BLANK_LINE
+    }
+
+    s += `\nFilename|Nb\n`
+    s += `-- | -- \n`
+    s += errorsByFile.map(err => {
+        return `${err.fileName}|${err.errors.length}`
     }).join('\n')
 
 
