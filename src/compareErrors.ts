@@ -1,13 +1,15 @@
 import { ErrorTs } from "./tsc/compileTsFiles"
 import { warning } from '@actions/core'
 
+export type FileWithLineNumbers = { path: string, added: number[], removed: number[] }
+
 type Input = {
     errorsBefore: ErrorTs[]
     errorsAfter: ErrorTs[]
     filesChanged: string[]
     filesAdded: string[]
     filesDeleted: string[]
-    lineNumbers: { path: string, added: number[], removed: number[] }[]
+    lineNumbers: FileWithLineNumbers[]
 }
 
 type Result = {
