@@ -40,10 +40,10 @@ export function getAndValidateArgs(): Args {
     repoToken: getInput('repo-token', { required: true }),
     directory: getInput('directory'),
     tsConfigPath: getInput('ts-config-path'),
-    filesChanged: getInput('files-changed', { required: true }).split(" "),
-    filesAdded: getInput('files-added', { required: true }).split(" "),
-    filesDeleted: getInput('files-deleted', { required: true }).split(" "),
-    lineNumbers: JSON.parse(getInput('line-numbers', { required: true })),
+    filesChanged: (getInput('files-changed') ?? "").split(" "),
+    filesAdded: (getInput('files-added') ?? "").split(" "),
+    filesDeleted: (getInput('files-deleted') ?? "").split(" "),
+    lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
     useCheck: getInput('use-check').trim() === 'true' ? true : false
   }
 
