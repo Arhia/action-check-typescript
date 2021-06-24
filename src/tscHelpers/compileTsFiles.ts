@@ -6,7 +6,6 @@ const defaultTscOptions = {
     noEmitOnError: true,
     noImplicitAny: false,
     exclude: [
-        "server/test/test-typescript/**/*.ts",
         "**/*.spec.ts",
         "node_modules/"
     ]

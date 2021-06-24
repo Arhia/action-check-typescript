@@ -76,12 +76,17 @@ async function run(): Promise<void> {
     const fileNames = getFilesToCompile({
       workingDir: '.',
       include: rawParsing.include ?? ['**/*.ts'],
-      exclude: rawParsing.exclude ?? ['node_modules']
+      exclude: rawParsing.exclude ?? [
+        "node_modules",
+        "dist",
+        "**/*.test.ts"]
     })
 
     if (!fileNames.length) {
       error(`[current branch] Aucun fichier trouvé correspondant aux patterns `)
     }
+
+    info(`[current branch] : files to compile :\n ${fileNames.join('\n')}`)
 
     const errorsPr = compileTsFiles({
       rootNames: fileNames,
