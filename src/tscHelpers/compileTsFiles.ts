@@ -24,15 +24,20 @@ type Input = {
     /**  */
     rootPath: string
     /** paths à partir desquels lancer tsc, par exemple : ./server/server/ts */
-    rootNames: string[]
-    tsOptions?: ts.CompilerOptions
+    rootNames: ts.CreateProgramOptions['rootNames']
+    projectReferences: ts.CreateProgramOptions['projectReferences']
+    tscOptions?: ts.CompilerOptions
 }
 
-export function compileTsFiles({ rootNames, rootPath, tsOptions }: Input): ErrorTs[] {
+export function compileTsFiles({ rootNames, rootPath, tscOptions, projectReferences }: Input): ErrorTs[] {
 
-    const program = ts.createProgram(rootNames, {
-        ...defaultTscOptions,
-        ...(tsOptions ?? {})
+    const program = ts.createProgram({
+        rootNames,
+        projectReferences,
+        options: {
+            ...defaultTscOptions,
+            ...(tscOptions ?? {})
+        }
     })
 
     const emitResult = program.emit()

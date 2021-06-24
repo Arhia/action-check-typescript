@@ -4,14 +4,13 @@ import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
-import { parseTsConfigFileToCompilerOptions } from './tscHelpers/parseTsConfigFileToCompilerOptions'
+import { parseTsConfigFile } from './tscHelpers/parseTsConfigFileToCompilerOptions'
 import { getAndValidateArgs, CHECK_FAIL_MODE } from './getAndValidateArgs'
 import { exec } from '@actions/exec'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
 import { compareErrors } from './compareErrors'
 import { compileTsFiles } from './tscHelpers/compileTsFiles'
-import { getFilesToCompile } from './getFilesToCompile'
 
 interface PullRequest {
   number: number;
@@ -54,51 +53,48 @@ async function run(): Promise<void> {
       installScript = `npm ci`
     }
 
+    const rootDir = `.`
+    const rootPath = path.resolve(rootDir)
+
+    // ***********************************************************************************************
+    //                                                  PR
+    // ***********************************************************************************************
     startGroup(`[current branch] Install Dependencies`)
     info(`Installing using ${installScript}`)
     await exec(installScript, [], execOptions)
     endGroup()
 
-    const { compilerOptions, rawParsing } = parseTsConfigFileToCompilerOptions(tsconfigPath)
+    startGroup(`[current branch] compile ts files`)
 
-    const finalCompilerOptions = {
-      ...compilerOptions,
+    const { compilerOptions: compilerOptionsPr, fileNames: rootNamesPr, rawParsing: rawParsingPr, projectReferences: projectReferencesPr } = parseTsConfigFile(tsconfigPath)
+
+    info(`[current branch] : tsconfig raw parsing :\n ${JSON.stringify(rawParsingPr)}`)
+
+    if (!rootNamesPr.length) {
+      error(`[current branch] Aucun fichier trouvé à compiler `)
+    }
+
+    info(`[current branch] : rootNames :\n ${rootNamesPr.join('\n')}`)
+
+    const finalCompilerOptionsPr = {
+      ...compilerOptionsPr,
       noEmit: true
     }
 
-    info(`[current branch] compilerOptions ${JSON.stringify(finalCompilerOptions)}`)
-
-    startGroup(`[current branch] compile ts files`)
-
-    const rootDir = `.`
-    const rootPath = path.resolve(rootDir)
-
-    info(`[current branch] : tsconfig raw parsing :\n ${JSON.stringify(rawParsing)}`)
-
-    const fileNames = getFilesToCompile({
-      workingDir: '.',
-      include: rawParsing.include ?? ['**/*.ts', '**/*.d.ts'],
-      exclude: rawParsing.exclude ?? [
-        "node_modules",
-        "dist",
-        "**/*.test.ts"]
-    })
-
-    if (!fileNames.length) {
-      error(`[current branch] Aucun fichier trouvé correspondant aux patterns `)
-    }
-
-    info(`[current branch] : files to compile :\n ${fileNames.join('\n')}`)
-
     const errorsPr = compileTsFiles({
-      rootNames: fileNames,
+      rootNames: rootNamesPr,
       rootPath,
-      tsOptions: finalCompilerOptions
+      tscOptions: finalCompilerOptionsPr,
+      projectReferences: projectReferencesPr
     })
 
     info(`[current branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
 
     endGroup()
+
+    // ***********************************************************************************************
+    //                                              BASE BRANCH
+    // ***********************************************************************************************
 
     startGroup(`[base branch] compile ts files`)
 
@@ -108,18 +104,18 @@ async function run(): Promise<void> {
       execOptions
     })
 
-    const fileNamesBase = getFilesToCompile({
-      workingDir: '.',
-      include: rawParsing.include ?? ['**/*.ts'],
-      exclude: rawParsing.exclude ?? ['node_modules']
-    })
-    if (!fileNamesBase.length) {
-      error(`[base branch] Aucun fichier trouvé correspondant aux patterns `)
+    const { compilerOptions: compilerOptionsBase, fileNames: rootNamesBase, projectReferences: projectReferencesBase } = parseTsConfigFile(tsconfigPath)
+
+    const finalCompilerOptionsBase = {
+      ...compilerOptionsBase,
+      noEmit: true
     }
+
     const errorsBaseBranch = compileTsFiles({
       rootPath,
-      rootNames: fileNamesBase,
-      tsOptions: finalCompilerOptions
+      rootNames: rootNamesBase,
+      projectReferences: projectReferencesBase,
+      tscOptions: finalCompilerOptionsBase
     })
 
     info(`[base branch] ts errors :\n ${JSON.stringify(errorsPr)}`)

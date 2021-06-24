@@ -4,9 +4,13 @@ import * as fs from 'fs'
 
 type ResultParsingTsConfig = {
     compilerOptions: ts.CompilerOptions,
-    rawParsing: ts.CompilerOptions & { exclude?: string[], include?: [] }
+    rawParsing: ts.CompilerOptions & { exclude?: string[], include?: [] },
+    fileNames: ts.ParsedCommandLine['fileNames'],
+    projectReferences: ts.ParsedCommandLine['projectReferences']
 }
-export function parseTsConfigFileToCompilerOptions(configPath: string): ResultParsingTsConfig {
+
+export function parseTsConfigFile(configPath: string): ResultParsingTsConfig {
+
     const content = fs.readFileSync(configPath).toString()
     const rawParsing = JSON.parse(content)
     let parsed: ts.ParsedCommandLine
@@ -17,8 +21,15 @@ export function parseTsConfigFileToCompilerOptions(configPath: string): ResultPa
     } catch (error) {
         throw new Error(`Error while parsing tsconfig and converting to compiler options \n ${error.message}`)
     }
+
+    if (parsed.errors && parsed.errors.length) {
+        console.error(`erreurs dans parsing tsconfig.json ${JSON.stringify(parsed.errors)}`)
+    }
+
     return {
         compilerOptions,
-        rawParsing
+        rawParsing: rawParsing,
+        fileNames: parsed.fileNames,
+        projectReferences: parsed.projectReferences
     }
 }
