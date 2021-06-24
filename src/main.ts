@@ -77,7 +77,7 @@ async function run(): Promise<void> {
 
     const fileNames = getFilesToCompile({
       workingDir: '.',
-      include: rawParsing.include ?? ['**/*.ts'],
+      include: rawParsing.include ?? ['**/*.ts', '**/*.d.ts'],
       exclude: rawParsing.exclude ?? [
         "node_modules",
         "dist",
