@@ -53,7 +53,7 @@ async function run(): Promise<void> {
       installScript = `npm ci`
     }
 
-    const rootDir = `.`
+    const rootDir = `src`
     const rootPath = path.resolve(rootDir)
 
     // ***********************************************************************************************
