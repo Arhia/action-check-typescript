@@ -13,7 +13,7 @@ type Input = {
 export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, newErrorsInProject, errorsInModifiedFiles, newErrorsInModifiedFiles }: Input): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
-    let s = `## Tsc check  \n`
+    let s = `## Typescript errors check  \n`
 
     const areStillErrors = !!errorsInProjectAfter.length
 
@@ -27,7 +27,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, ne
             s += `You have added ${delta} errors whith this PR 😥  \n`
             s += BLANK_LINE
         }
-        s += `**${errorsInProjectAfter.length} Typescript errors detected in all the codebase 😟.**  \n`
+        s += `**${errorsInProjectAfter.length} typescript errors detected in all the codebase 😟.**  \n`
         s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
         s += BLANK_LINE
         s += BLANK_LINE
@@ -35,20 +35,20 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, ne
     }
 
     if (!areStillErrors) {
-        s += `No Typescript error in the codebase ! 🎉  \n`
+        s += `No typescript error in the codebase ! 🎉  \n`
         s += BLANK_LINE
         if (delta < 0) {
-            s += `You have remove ${-delta} Typescript errors with this PR 💪  \n`
+            s += `You have remove ${-delta} typescript errors with this PR 💪  \n`
             s += BLANK_LINE
         }
         return s
     }
 
     if (!errorsInModifiedFiles.length) {
-        s += `No Typescript error in files changed in this PR ! 🎉 \n`
+        s += `No typescript error in files changed in this PR ! 🎉 \n`
         s += BLANK_LINE
     } else {
-        s += `**${errorsInModifiedFiles.length} Typescript errors detected in the modified files.**  \n`
+        s += `**${errorsInModifiedFiles.length} typescript errors detected in the modified files.**  \n`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, errorsInModifiedFiles)
         s += BLANK_LINE
