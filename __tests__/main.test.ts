@@ -1,5 +1,5 @@
 import { compareErrors, FileWithLineNumbers } from '../src/compareErrors'
-import { ErrorTs } from '../src/tsc/compileTsFiles'
+import { ErrorTs } from '../src/tscHelpers/compileTsFiles'
 
 test('1. compareErrors', () => {
 
