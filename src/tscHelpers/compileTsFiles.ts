@@ -2,7 +2,7 @@ import * as ts from "typescript"
 
 const defaultTscOptions = {
     target: ts.ScriptTarget.ES2020,
-    lib: ['es2019'],
+    lib: ['es2018'],
     module: ts.ModuleKind.CommonJS,
     noEmitOnError: true,
     noImplicitAny: false,
