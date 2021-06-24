@@ -1,5 +1,10 @@
 import { getInput } from '@actions/core'
 
+export const enum CHECK_FAIL_MODE {
+  ON_ERRORS_ADDED_IN_PR = 'added',
+  ON_ERRORS_PRESENT_IN_PR = 'errors_in_pr',
+  ON_ERRORS_PRESENT_IN_CODE = 'errors_in_code'
+}
 type Args = {
   repoToken: string
   directory: string
@@ -33,6 +38,7 @@ type Args = {
    */
   lineNumbers: { path: string, added: number[], removed: number[] }[]
   useCheck: boolean
+  checkFailMode: CHECK_FAIL_MODE
 }
 
 export function getAndValidateArgs(): Args {
@@ -44,7 +50,16 @@ export function getAndValidateArgs(): Args {
     filesAdded: (getInput('files-added') ?? "").split(" "),
     filesDeleted: (getInput('files-deleted') ?? "").split(" "),
     lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
-    useCheck: getInput('use-check').trim() === 'true' ? true : false
+    useCheck: getInput('use-check').trim() === 'true' ? true : false,
+    checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE
+  }
+
+  if (![
+    CHECK_FAIL_MODE.ON_ERRORS_ADDED_IN_PR,
+    CHECK_FAIL_MODE.ON_ERRORS_PRESENT_IN_CODE,
+    CHECK_FAIL_MODE.ON_ERRORS_PRESENT_IN_PR
+  ].includes(args.checkFailMode)) {
+    throw new Error(`Invalid value ${args.checkFailMode} for input check-fail-mode`)
   }
 
   return args

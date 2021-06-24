@@ -1,6 +1,6 @@
 import * as globby from 'globby'
 import * as path from 'path'
-
+import { info } from '@actions/core'
 interface Options {
     workingDir: string
     rootDir?: string
@@ -16,6 +16,7 @@ export function getFilesToCompile({ workingDir, rootDir, include, exclude }: Opt
     const negatePatterns = exclude ? exclude.map(one => path.join(`!${workingDir}`, one)) : []
 
     const patterns = positivePatterns.concat(negatePatterns)
+    info(`getFilesToCompile : patterns applied ${JSON.stringify(patterns)}`)
     return globby.sync(patterns)
 
 }
