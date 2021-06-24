@@ -52,6 +52,8 @@ async function run(): Promise<void> {
       installScript = `yarn --frozen-lockfile`
     } else if (packageLock) {
       installScript = `npm ci`
+    } else {
+      installScript = `npm install --production=false`
     }
 
     startGroup(`[current branch] Install Dependencies`)
