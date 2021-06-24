@@ -1,10 +1,12 @@
 import * as ts from "typescript"
 
-const defaultTscOptions = {
+const defaultTscOptions: ts.CompilerOptions = {
     target: ts.ScriptTarget.ES2020,
     module: ts.ModuleKind.CommonJS,
-    noEmitOnError: true,
+    lib: ['es2020'],
+    noEmit: true,
     noImplicitAny: false,
+    includes: ['**/*.ts', '**/*/d.ts'],
     exclude: [
         "**/*.spec.ts",
         "node_modules/"

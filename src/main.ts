@@ -53,8 +53,10 @@ async function run(): Promise<void> {
       installScript = `npm ci`
     }
 
-    const rootDir = `src`
+    const rootDir = `.`
     const rootPath = path.resolve(rootDir)
+
+    info(`rootPath : ${rootPath}`)
 
     // ***********************************************************************************************
     //                                                  PR
@@ -88,7 +90,7 @@ async function run(): Promise<void> {
       projectReferences: projectReferencesPr
     })
 
-    info(`[current branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
+    info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
 
     endGroup()
 
@@ -118,7 +120,7 @@ async function run(): Promise<void> {
       tscOptions: finalCompilerOptionsBase
     })
 
-    info(`[base branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
+    info(`[base branch] ts errors : 10 first : \n ${JSON.stringify(errorsBaseBranch.slice(0, 10))}`)
 
     endGroup()
 
