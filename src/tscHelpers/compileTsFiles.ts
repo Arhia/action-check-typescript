@@ -2,7 +2,6 @@ import * as ts from "typescript"
 
 const defaultTscOptions = {
     target: ts.ScriptTarget.ES2020,
-    lib: ['es2018'],
     module: ts.ModuleKind.CommonJS,
     noEmitOnError: true,
     noImplicitAny: false,
@@ -30,14 +29,14 @@ type Input = {
     tscOptions?: ts.CompilerOptions
 }
 
-export function compileTsFiles({ rootNames, rootPath, tscOptions, projectReferences }: Input): ErrorTs[] {
+export function compileTsFiles({ rootNames, rootPath, projectReferences }: Input): ErrorTs[] {
 
     const program = ts.createProgram({
         rootNames,
         projectReferences,
         options: {
             ...defaultTscOptions,
-            ...(tscOptions ?? {})
+            //...(tscOptions ?? {})
         }
     })
 
