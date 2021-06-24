@@ -1,11 +1,11 @@
-import { info, startGroup, endGroup, setFailed, warning, error } from '@actions/core'
+import { info, startGroup, endGroup, setFailed, error } from '@actions/core'
 import * as path from 'path'
 import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
 import { parseTsConfigFileToCompilerOptions } from './tscHelpers/parseTsConfigFileToCompilerOptions'
-import { getAndValidateArgs } from './getAndValidateArgs'
+import { getAndValidateArgs, CHECK_FAIL_MODE } from './getAndValidateArgs'
 import { exec } from '@actions/exec'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
@@ -59,12 +59,14 @@ async function run(): Promise<void> {
     await exec(installScript, [], execOptions)
     endGroup()
 
-    const compilerOptions = {
-      ...parseTsConfigFileToCompilerOptions(tsconfigPath),
+    const { compilerOptions, rawParsing } = parseTsConfigFileToCompilerOptions(tsconfigPath)
+
+    const finalCompilerOptions = {
+      ...compilerOptions,
       noEmit: true
     }
 
-    info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
+    info(`[current branch] compilerOptions ${JSON.stringify(finalCompilerOptions)}`)
 
     startGroup(`[current branch] compile ts files`)
 
@@ -73,9 +75,10 @@ async function run(): Promise<void> {
 
     const fileNames = getFilesToCompile({
       workingDir: '.',
-      include: ['**/*.ts'],
-      exclude: ['node_modules']
+      include: rawParsing.include ?? ['**/*.ts'],
+      exclude: rawParsing.exclude ?? ['node_modules']
     })
+
     if (!fileNames.length) {
       error(`[current branch] Aucun fichier trouvé correspondant aux patterns `)
     }
@@ -83,7 +86,7 @@ async function run(): Promise<void> {
     const errorsPr = compileTsFiles({
       rootNames: fileNames,
       rootPath,
-      tsOptions: compilerOptions
+      tsOptions: finalCompilerOptions
     })
 
     info(`[current branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
@@ -100,8 +103,8 @@ async function run(): Promise<void> {
 
     const fileNamesBase = getFilesToCompile({
       workingDir: '.',
-      include: ['**/*.ts'],
-      exclude: ['node_modules']
+      include: rawParsing.include ?? ['**/*.ts'],
+      exclude: rawParsing.exclude ?? ['node_modules']
     })
     if (!fileNamesBase.length) {
       error(`[base branch] Aucun fichier trouvé correspondant aux patterns `)
@@ -109,8 +112,10 @@ async function run(): Promise<void> {
     const errorsBaseBranch = compileTsFiles({
       rootPath,
       rootNames: fileNamesBase,
-      tsOptions: compilerOptions
+      tsOptions: finalCompilerOptions
     })
+
+    info(`[base branch] ts errors :\n ${JSON.stringify(errorsPr)}`)
 
     endGroup()
 
@@ -154,6 +159,7 @@ async function run(): Promise<void> {
         newErrorsInModifiedFiles
       })
     }
+    info(`comment body obtained`)
 
     try {
       await octokit.issues.createComment(comment)
@@ -173,30 +179,55 @@ async function run(): Promise<void> {
         info(`Error creating PR review ${errCreateComment.message}`)
       }
     }
+
+    info(`comment created`)
+
     endGroup()
 
-    const isPrOk = !errorsInModifiedFiles.length
+    let shouldFailCheck = false
+    let title = ''
+    let summary = ''
+
+    if (args.checkFailMode === CHECK_FAIL_MODE.ON_ERRORS_ADDED_IN_PR) {
+      shouldFailCheck = resultCompareErrors.errorsAdded.length > 0
+      if (shouldFailCheck) {
+        title = `${errorsInModifiedFiles.length} ts errors by the PR.`
+        summary = `${errorsInModifiedFiles.length} ts errors by the PR.`
+      } else {
+        title = `No ts errors added.`
+        summary = `No ts errors added.`
+      }
+    } else if (args.checkFailMode === CHECK_FAIL_MODE.ON_ERRORS_PRESENT_IN_PR) {
+      shouldFailCheck = errorsInModifiedFiles.length > 0
+      if (shouldFailCheck) {
+        title = `${errorsInModifiedFiles.length} ts errors present in modified files.`
+        summary = `${errorsInModifiedFiles.length} ts errors present in modified files.`
+      } else {
+        title = `No ts errors present in modified files.`
+        summary = `No ts errors present in modified files.`
+      }
+    } else if (args.checkFailMode === CHECK_FAIL_MODE.ON_ERRORS_PRESENT_IN_CODE) {
+      shouldFailCheck = errorsPr.length > 0
+      if (shouldFailCheck) {
+        title = `${errorsInModifiedFiles.length} ts errors present in the PR branch.`
+        summary = `${errorsInModifiedFiles.length} ts errors present in the PR branch.`
+      } else {
+        title = `No ts errors present in the PR branch.`
+        summary = `No ts errors present in the PR branch.`
+      }
+    }
 
     if (args.useCheck) {
       const finish = await createCheck(octokit, context, "Check ts errors")
 
-      if (isPrOk) {
-        await finish({
-          conclusion: 'success',
-          output: {
-            title: `No tsc error in the PR files.`,
-            summary: `No tsc error in the PR files.`
-          }
-        })
-      } else {
-        await finish({
-          conclusion: 'failure',
-          output: {
-            title: `${errorsInModifiedFiles.length} tsc error in the PR files.`,
-            summary: `${errorsInModifiedFiles.length} tsc error in the PR files.`
-          }
-        })
-      }
+      await finish({
+        conclusion: shouldFailCheck ? 'failure' : 'success',
+        output: {
+          title: title,
+          summary: summary
+        }
+      })
+
     }
 
   } catch (errorRun) {

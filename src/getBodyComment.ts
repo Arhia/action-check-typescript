@@ -131,7 +131,7 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
         s += BLANK_LINE
     }
 
-    s += `\nFilename|Nb\n`
+    s += `\nFilename|Nb of errors\n`
     s += `-- | -- \n`
     s += errorsByFile.map(err => {
         return `${err.fileName}|${err.errors.length}`

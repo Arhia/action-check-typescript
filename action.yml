@@ -24,6 +24,9 @@ inputs:
     default: './tsconfig.json'
   use-check:
     description: 'Report status as a CI Check'
+  check-fail-mode:
+    description: "Allowed values : added, errors_in_pr, errors_in_code"
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
