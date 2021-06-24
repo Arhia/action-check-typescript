@@ -1,4 +1,4 @@
-import { ErrorTs } from "./tsc/compileTsFiles"
+import { ErrorTs } from "./tscHelpers/compileTsFiles"
 import { warning } from '@actions/core'
 
 export type FileWithLineNumbers = { path: string, added: number[], removed: number[] }

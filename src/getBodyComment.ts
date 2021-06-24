@@ -1,4 +1,4 @@
-import { ErrorTs } from "./tsc/compileTsFiles"
+import { ErrorTs } from "./tscHelpers/compileTsFiles"
 
 const BLANK_LINE = '  \n'
 

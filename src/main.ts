@@ -4,13 +4,13 @@ import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
-import { parseTsConfigFileToCompilerOptions } from './tsc/parseTsConfigFileToCompilerOptions'
+import { parseTsConfigFileToCompilerOptions } from './tscHelpers/parseTsConfigFileToCompilerOptions'
 import { getAndValidateArgs } from './getAndValidateArgs'
 import { exec } from '@actions/exec'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
 import { compareErrors } from './compareErrors'
-import { compileTsFiles } from './tsc/compileTsFiles'
+import { compileTsFiles } from './tscHelpers/compileTsFiles'
 import { getFilesToCompile } from './getFilesToCompile'
 
 interface PullRequest {
@@ -59,32 +59,23 @@ async function run(): Promise<void> {
     await exec(installScript, [], execOptions)
     endGroup()
 
-    startGroup(`[current branch] compile ts files`)
-
-    info(`[current branch] start parsing tsconfig file`)
-
     const compilerOptions = {
       ...parseTsConfigFileToCompilerOptions(tsconfigPath),
       noEmit: true
     }
 
-    info(`[current branch] end parsing tsconfig file`)
-
     info(`[current branch] compilerOptions ${JSON.stringify(compilerOptions)}`)
+
+    startGroup(`[current branch] compile ts files`)
 
     const rootDir = `.`
     const rootPath = path.resolve(rootDir)
-
-    info(`[current branch] start get files to compile`)
 
     const fileNames = getFilesToCompile({
       workingDir: '.',
       include: ['**/*.ts'],
       exclude: ['node_modules']
     })
-
-    info(`[current branch] end get files to compile`)
-
     if (!fileNames.length) {
       error(`[current branch] Aucun fichier trouvé correspondant aux patterns `)
     }
