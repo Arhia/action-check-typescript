@@ -191,8 +191,8 @@ async function run(): Promise<void> {
     if (args.checkFailMode === CHECK_FAIL_MODE.ON_ERRORS_ADDED_IN_PR) {
       shouldFailCheck = resultCompareErrors.errorsAdded.length > 0
       if (shouldFailCheck) {
-        title = `${errorsInModifiedFiles.length} ts errors by the PR.`
-        summary = `${errorsInModifiedFiles.length} ts errors by the PR.`
+        title = `${errorsInModifiedFiles.length} ts errors added by this PR.`
+        summary = `${errorsInModifiedFiles.length} ts errors added by this PR.`
       } else {
         title = `No ts errors added.`
         summary = `No ts errors added.`
