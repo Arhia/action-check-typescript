@@ -73,6 +73,8 @@ async function run(): Promise<void> {
     const rootDir = `.`
     const rootPath = path.resolve(rootDir)
 
+    info(`[current branch] : tsconfig raw parsing :\n ${JSON.stringify(rawParsing)}`)
+
     const fileNames = getFilesToCompile({
       workingDir: '.',
       include: rawParsing.include ?? ['**/*.ts'],
