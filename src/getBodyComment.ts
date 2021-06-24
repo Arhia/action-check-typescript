@@ -10,7 +10,7 @@ type Input = {
     newErrorsInModifiedFiles: ErrorTs[]
 }
 
-export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, newErrorsInProject, errorsInModifiedFiles, newErrorsInModifiedFiles }: Input): string {
+export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInModifiedFiles, newErrorsInModifiedFiles }: Input): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
     let s = `## Typescript errors check  \n`
@@ -100,7 +100,7 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 0
 
 }
 
-function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 0): string {
+function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 10): string {
 
     const errorsByFile: {
         fileName: string
