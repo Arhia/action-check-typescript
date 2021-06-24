@@ -2,6 +2,7 @@ import * as ts from "typescript"
 
 const defaultTscOptions = {
     target: ts.ScriptTarget.ES2020,
+    lib: ['es2019'],
     module: ts.ModuleKind.CommonJS,
     noEmitOnError: true,
     noImplicitAny: false,
@@ -70,7 +71,7 @@ export function compileTsFiles({ rootNames, rootPath, tscOptions, projectReferen
                 errors.push(errFormated)
             }
         } else {
-            console.log(ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"))
+            //console.log(ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"))
         }
     })
 
