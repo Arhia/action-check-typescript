@@ -1,4 +1,4 @@
-import { ErrorTs } from "./tscHelpers/compileTsFiles"
+import { ErrorTs } from "./main"
 
 type Input = {
     errors: ErrorTs[]
@@ -64,7 +64,7 @@ export function formatErrorsByFiles({ fileNames, errors }: Input): Result {
             s += "-".repeat(100)
             s += "\n"
             errByFile.errors.forEach(err => {
-                s += `(${err.line},${err.character}) : ${err.message}`
+                s += `(${err.line},${err.column}) : ${err.message}`
             })
         })
     }
