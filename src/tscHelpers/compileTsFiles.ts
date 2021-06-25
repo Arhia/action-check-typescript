@@ -3,7 +3,7 @@ import * as ts from "typescript"
 const defaultTscOptions: ts.CompilerOptions = {
     target: ts.ScriptTarget.ES2020,
     module: ts.ModuleKind.CommonJS,
-    lib: ['es2020'],
+    lib: ['es2018', 'es2019', 'es2020'],
     noEmit: true,
     noImplicitAny: false,
     includes: ['**/*.ts', '**/*/d.ts'],
