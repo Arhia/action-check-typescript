@@ -10,8 +10,18 @@ import { exec } from '@actions/exec'
 import { getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
 import { compareErrors } from './compareErrors'
-import { compileTsFiles } from './tscHelpers/compileTsFiles'
+import { runTscCli } from './tscHelpers/runTscCli'
+import { parseOutputTsc } from './tscHelpers/parseOutputTsc'
 
+export type ErrorTs = {
+  fileName: string
+  line: number
+  column: number
+  fileNameResolved: string
+  code: number
+  severity?: string
+  message: string
+}
 interface PullRequest {
   number: number;
   html_url?: string
@@ -68,7 +78,7 @@ async function run(): Promise<void> {
 
     startGroup(`[current branch] compile ts files`)
 
-    const { compilerOptions: compilerOptionsPr, fileNames: rootNamesPr, rawParsing: rawParsingPr, projectReferences: projectReferencesPr } = parseTsConfigFile(tsconfigPath)
+    const { fileNames: rootNamesPr, rawParsing: rawParsingPr } = parseTsConfigFile(tsconfigPath)
 
     info(`[current branch] : tsconfig raw parsing :\n ${JSON.stringify(rawParsingPr)}`)
 
@@ -78,17 +88,12 @@ async function run(): Promise<void> {
 
     info(`[current branch] : rootNames :\n ${rootNamesPr.join('\n')}`)
 
-    const finalCompilerOptionsPr = {
-      ...compilerOptionsPr,
-      noEmit: true
-    }
-
-    const errorsPr = compileTsFiles({
-      rootNames: rootNamesPr,
-      rootPath,
-      tscOptions: finalCompilerOptionsPr,
-      projectReferences: projectReferencesPr
+    const { output: tscOutputCurrent } = await runTscCli({
+      workingDir,
+      tsconfigPath
     })
+
+    const errorsPr = parseOutputTsc(tscOutputCurrent)
 
     info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
 
@@ -106,19 +111,12 @@ async function run(): Promise<void> {
       execOptions
     })
 
-    const { compilerOptions: compilerOptionsBase, fileNames: rootNamesBase, projectReferences: projectReferencesBase } = parseTsConfigFile(tsconfigPath)
-
-    const finalCompilerOptionsBase = {
-      ...compilerOptionsBase,
-      noEmit: true
-    }
-
-    const errorsBaseBranch = compileTsFiles({
-      rootPath,
-      rootNames: rootNamesBase,
-      projectReferences: projectReferencesBase,
-      tscOptions: finalCompilerOptionsBase
+    const { output: tscOutputBase } = await runTscCli({
+      workingDir,
+      tsconfigPath
     })
+
+    const errorsBaseBranch = parseOutputTsc(tscOutputBase)
 
     info(`[base branch] ts errors : 10 first : \n ${JSON.stringify(errorsBaseBranch.slice(0, 10))}`)
 

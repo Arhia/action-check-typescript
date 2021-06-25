@@ -1,4 +1,5 @@
 import * as ts from "typescript"
+import { ErrorTs } from "../main"
 
 const defaultTscOptions: ts.CompilerOptions = {
     target: ts.ScriptTarget.ES2020,
@@ -10,15 +11,6 @@ const defaultTscOptions: ts.CompilerOptions = {
         "**/*.spec.ts",
         "node_modules"
     ]
-}
-
-export type ErrorTs = {
-    fileName: string
-    fileNameResolved: string
-    code: number
-    message: string
-    line: number
-    character: number
 }
 
 type Input = {
@@ -57,14 +49,14 @@ export function compileTsFiles({ rootNames, rootPath, tscOptions, projectReferen
                 fileName: diagnostic.file.fileName.replace(`${rootPath}/`, ''),
                 fileNameResolved: diagnostic.file.fileName,
                 line: line + 1,
-                character: character + 1,
+                column: character + 1,
                 message: typeof diagnostic.messageText === 'string' ? diagnostic.messageText : diagnostic.messageText.messageText
             }
             const errAlreadyDetected = errors.find(err => {
                 return err.fileName === errFormated.fileName
                     && err.code === errFormated.code
                     && err.line === errFormated.line
-                    && err.character === errFormated.character
+                    && err.column === errFormated.column
                     && err.message === errFormated.message
             })
             if (!errAlreadyDetected) {
