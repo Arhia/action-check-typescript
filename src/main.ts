@@ -95,8 +95,11 @@ async function run(): Promise<void> {
 
     const errorsPr = parseOutputTsc(tscOutputCurrent)
 
-    info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
-
+    if (errorsPr.length) {
+      info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
+    } else {
+      info(`[current branch] : no error detected`)
+    }
     endGroup()
 
     // ***********************************************************************************************
