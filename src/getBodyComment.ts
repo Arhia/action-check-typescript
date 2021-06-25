@@ -20,11 +20,11 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     if (areStillErrors) {
         if (delta < 0) {
             s += BLANK_LINE
-            s += `You have remove ${-delta} errors with this PR 👏  \n`
+            s += `Yeah, you have remove ${-delta} errors with this PR 👏  \n`
             s += BLANK_LINE
         } else if (delta > 0) {
             s += BLANK_LINE
-            s += `You have added ${delta} errors whith this PR 😥  \n`
+            s += `Ohhh you have added ${delta} errors whith this PR 😥  \n`
             s += BLANK_LINE
         }
         s += `**${errorsInProjectAfter.length} typescript errors detected in all the codebase 😟.**  \n`
@@ -38,14 +38,14 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         s += `No typescript error in the codebase ! 🎉  \n`
         s += BLANK_LINE
         if (delta < 0) {
-            s += `You have remove ${-delta} typescript errors with this PR 💪  \n`
+            s += `Congrats, you have remove ${-delta} typescript errors with this PR 💪  \n`
             s += BLANK_LINE
         }
         return s
     }
 
     if (!errorsInModifiedFiles.length) {
-        s += `No typescript error in files changed in this PR ! 🎉 \n`
+        s += `Well done : no typescript error in files changed in this PR ! 🎉 \n`
         s += BLANK_LINE
     } else {
         s += `**${errorsInModifiedFiles.length} typescript errors detected in the modified files.**  \n`
