@@ -87,7 +87,7 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 0
     s += `\nFilename|Location|Message\n`
     s += `-- | -- | -- \n`
     s += errors.map(err => {
-        return `${err.fileNameResolved}|${err.line}, ${err.character}|${err.message}`
+        return `${err.fileName}|${err.line}, ${err.character}|${err.message}`
     }).join('\n')
 
 

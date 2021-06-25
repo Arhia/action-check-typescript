@@ -9,7 +9,7 @@ const defaultTscOptions: ts.CompilerOptions = {
     includes: ['**/*.ts', '**/*/d.ts'],
     exclude: [
         "**/*.spec.ts",
-        "node_modules/"
+        "node_modules"
     ]
 }
 
