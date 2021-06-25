@@ -55,7 +55,7 @@ export function compileTsFiles({ rootNames, rootPath, projectReferences }: Input
             const { line, character } = ts.getLineAndCharacterOfPosition(diagnostic.file, diagnostic.start!)
             const errFormated = {
                 code: diagnostic.code,
-                fileName: diagnostic.file.fileName.replace(rootPath, '.'),
+                fileName: diagnostic.file.fileName.replace(`${rootPath}/`, ''),
                 fileNameResolved: diagnostic.file.fileName,
                 line: line + 1,
                 character: character + 1,
