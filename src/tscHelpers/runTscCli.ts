@@ -36,6 +36,8 @@ export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promi
     'false',
     '--incremental',
     'false',
+    '--watch',
+    'false'
   ]
   if (tsconfigPath) {
     execArgs.push('--project', tsconfigPath)
