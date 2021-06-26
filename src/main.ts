@@ -78,15 +78,9 @@ async function run(): Promise<void> {
 
     startGroup(`[current branch] compile ts files`)
 
-    const { fileNames: rootNamesPr, rawParsing: rawParsingPr } = parseTsConfigFile(tsconfigPath)
+    const { rawParsing: rawParsingPr } = parseTsConfigFile(tsconfigPath)
 
     info(`[current branch] : tsconfig raw parsing :\n ${JSON.stringify(rawParsingPr)}`)
-
-    if (!rootNamesPr.length) {
-      error(`[current branch] Aucun fichier trouvé à compiler `)
-    }
-
-    info(`[current branch] : rootNames :\n ${rootNamesPr.join('\n')}`)
 
     const { output: tscOutputCurrent } = await runTscCli({
       workingDir,

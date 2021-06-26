@@ -3,7 +3,16 @@ import { ErrorTs } from "../main"
 export function parseOutputTsc(output: string): ErrorTs[] {
     const lines = output.split('\n').map(line => line.trim()).filter(line => !!line)
     const errorsParsed = lines.map(line => parseTscErrorLine(line, tscMatcher))
-    return errorsParsed
+    /* somes errors have file 'undefined' perhaps because some errors messages are display over several lines ?
+    eg : 
+    server/webAPI/sal/webApiSalAddUpdate.ts(41,29): error TS2345: Argument of type 'IBodySalAddOrUpdate' is not assignable to parameter of type 'CfgIdentifySal'.
+    The types of 'data.sal_id_externe' are incompatible between these types.
+        Type 'sal_id_externe' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+
+    */
+    const errorsFiltered = errorsParsed.filter(err => !!err.fileName)
+    return errorsFiltered
 }
 
 interface Matcher {
