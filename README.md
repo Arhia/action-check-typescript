@@ -13,7 +13,7 @@ A Github action that compile ts files and display the errors found in whole code
 - Compare ts errors in base branch and in PR branch to detect new errors (handle automatically line numbers offset)  💪
 - Doesn't upload anything or rely on centralized storage  👐 
 
-### Usage:
+## Usage
 
 action-check-typescript rely on two other actions (big thanks to the authors ! ❤️) to : 
 - Equip-Collaboration/diff-line-numbers : retrieve line numbers of added and removed lines in files changed
@@ -56,8 +56,7 @@ jobs:
           files-deleted: ${{steps.files.outputs.files_deleted}}
           line-numbers: ${{steps.diff.outputs.lineNumbers}}
 ```
-
-### Customizing the check  
+## Customize the check  
 
 By default, this action doesn't perform a status check (aka pass/fail).  
 
@@ -74,3 +73,17 @@ Value|Behaviour
 `added`| Check fails if some errors are added in the files added/modified in the PR branch.  
 `errors_in_pr`| Check fails if any errors are present in the files added/modified in the PR branch (even if already in base branche).  
 `errors_in_code`| Check fails if any errors are present in the whole branch.  
+
+## Use a specific tsconfig file
+
+By default, this actions uses tsconfig file located at './tsconfig.json'   
+
+You may want to use a different file for this action, in order to change tsc behaviour.  
+For example, if you use `watch:true` in your regular tsconfig file, you should disable watching mode.  
+
+In order to do this, you would create a specific tsconfig file (eg name `tsconfig.check.ts`) and setting accordingly the
+parameter `ts-config-path` : 
+
+```yml
+  ts-config-path: './tsconfig.check.json'
+```
