@@ -52,7 +52,7 @@ export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promi
   try {
     await exec('node', execArgs, options)
   } catch (error) {
-    setFailed('')
+    setFailed(error.message)
   }
 
   return {
