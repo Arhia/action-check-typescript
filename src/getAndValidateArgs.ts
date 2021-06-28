@@ -1,4 +1,4 @@
-import { getInput } from '@actions/core'
+import { getBooleanInput, getInput } from '@actions/core'
 
 export const enum CHECK_FAIL_MODE {
   ON_ERRORS_ADDED_IN_PR = 'added',
@@ -38,20 +38,22 @@ type Args = {
    */
   lineNumbers: { path: string, added: number[], removed: number[] }[]
   useCheck: boolean
-  checkFailMode: CHECK_FAIL_MODE
+  checkFailMode: CHECK_FAIL_MODE,
+  debug: boolean
 }
 
 export function getAndValidateArgs(): Args {
   const args = {
-    repoToken: getInput('repo-token', { required: true }),
-    directory: getInput('directory'),
-    tsConfigPath: getInput('ts-config-path'),
+    repoToken: getInput('repo-token', { required: true, trimWhitespace: true }),
+    directory: getInput('directory', { trimWhitespace: true }),
+    tsConfigPath: getInput('ts-config-path', { trimWhitespace: true, required: true }),
     filesChanged: (getInput('files-changed') ?? "").split(" "),
     filesAdded: (getInput('files-added') ?? "").split(" "),
     filesDeleted: (getInput('files-deleted') ?? "").split(" "),
     lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
-    useCheck: getInput('use-check').trim() === 'true' ? true : false,
-    checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE
+    useCheck: getBooleanInput('use-check'),
+    checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE,
+    debug: getBooleanInput('debug')
   }
 
   if (![

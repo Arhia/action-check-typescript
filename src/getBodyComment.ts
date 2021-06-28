@@ -55,6 +55,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     }
 
     if (newErrorsInModifiedFiles.length > 0) {
+        s += BLANK_LINE
         s += `**${newErrorsInModifiedFiles.length} new errors added**  \n`
         s += `*Note : in some cases, new errors can be just same errors but with different locations*`
         s += BLANK_LINE
@@ -70,7 +71,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
 }
 
-function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 10): string {
+function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
 
     const shouldUseCollapsible = errors.length > thresholdCollapse
     let s = ``
@@ -99,7 +100,7 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 1
 
 }
 
-function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 10): string {
+function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
 
     const errorsByFile: {
         fileName: string
@@ -130,7 +131,6 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
         s += BLANK_LINE
         s += BLANK_LINE
     } else {
-        s += BLANK_LINE
         s += `${title}  \n`
         s += BLANK_LINE
     }
@@ -145,8 +145,6 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
     if (shouldUseCollapsible) {
         s += BLANK_LINE
         s += `</details>  \n`
-    } else {
-        s += BLANK_LINE
     }
 
     return s
