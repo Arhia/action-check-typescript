@@ -1,4 +1,4 @@
-import { info, startGroup, endGroup, setFailed, error } from '@actions/core'
+import { info, startGroup, endGroup, setFailed } from '@actions/core'
 import * as path from 'path'
 import { context, getOctokit } from '@actions/github'
 import { createCheck } from './createCheck'
@@ -91,11 +91,18 @@ async function run(): Promise<void> {
 
     const errorsPr = parseOutputTsc(tscOutputCurrent)
 
-    if (errorsPr.length) {
-      info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
-    } else {
-      info(`[current branch] : no error detected`)
+    info(`[current branch] : ${errorsPr.length} error(s) detected`)
+
+    const ansiColorsCode = {
+      magenta: '\u001b[35m',
+      cyan: '\u001b[38;5;6m',
+      red: '\u001b[38;2;255;0;0m'
     }
+
+    if (args.debug) {
+      info(`${ansiColorsCode.cyan}[current branch] all errors: \n${JSON.stringify(errorsPr)}`)
+    }
+
     endGroup()
 
     // ***********************************************************************************************
@@ -117,7 +124,11 @@ async function run(): Promise<void> {
 
     const errorsBaseBranch = parseOutputTsc(tscOutputBase)
 
-    info(`[base branch] ts errors : 10 first : \n ${JSON.stringify(errorsBaseBranch.slice(0, 10))}`)
+    info(`[base branch] : ${errorsBaseBranch.length} error(s) detected`)
+
+    if (args.debug) {
+      info(`${ansiColorsCode.cyan}[base branch] all errors: \n${JSON.stringify(errorsBaseBranch)}`)
+    }
 
     endGroup()
 
@@ -132,15 +143,21 @@ async function run(): Promise<void> {
       lineNumbers: args.lineNumbers
     })
 
-    info(`Contenu de resultCompareErrors : ${JSON.stringify(resultCompareErrors)}`)
+    if (args.debug) {
+      info(`${ansiColorsCode.cyan}Contenu de resultCompareErrors : ${JSON.stringify(resultCompareErrors)}`)
+    }
 
     const errorsInModifiedFiles = errorsPr.filter(err => {
       return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
     })
 
+    info(`${errorsInModifiedFiles.length} errors in modified files`)
+
     const newErrorsInModifiedFiles = resultCompareErrors.errorsAdded.filter(err => {
       return args.filesChanged.concat(args.filesAdded).includes(err.fileName)
     })
+
+    info(`${newErrorsInModifiedFiles.length} added errors in modified files`)
 
     endGroup()
 
@@ -231,6 +248,7 @@ async function run(): Promise<void> {
       })
 
     }
+
 
   } catch (errorRun) {
     setFailed(errorRun.message)

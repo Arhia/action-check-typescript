@@ -55,6 +55,8 @@ export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promi
     setFailed(error.message)
   }
 
+  process.exitCode = 0
+
   return {
     output: myOutput,
     error: myError
