@@ -71,7 +71,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
 }
 
-function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 10): string {
+function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
 
     const shouldUseCollapsible = errors.length > thresholdCollapse
     let s = ``
@@ -100,7 +100,7 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 1
 
 }
 
-function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 10): string {
+function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
 
     const errorsByFile: {
         fileName: string
