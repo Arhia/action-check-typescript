@@ -27,7 +27,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
             s += `Ohhh you have added ${delta} errors whith this PR 😥  \n`
             s += BLANK_LINE
         }
-        s += `**${errorsInProjectAfter.length} typescript errors detected in all the codebase 😟.**  \n`
+        s += `**${errorsInProjectAfter.length} ts errors detected in all the codebase 😟.**  \n`
         s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
         s += BLANK_LINE
         s += BLANK_LINE
@@ -35,20 +35,20 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     }
 
     if (!areStillErrors) {
-        s += `No typescript error in the codebase ! 🎉  \n`
+        s += `No ts error in the codebase ! 🎉  \n`
         s += BLANK_LINE
         if (delta < 0) {
-            s += `Congrats, you have remove ${-delta} typescript errors with this PR 💪  \n`
+            s += `Congrats, you have remove ${-delta} ts errors with this PR 💪  \n`
             s += BLANK_LINE
         }
         return s
     }
 
     if (!errorsInModifiedFiles.length) {
-        s += `Well done : no typescript error in files changed in this PR ! 🎉 \n`
+        s += `Well done : no ts error in files changed in this PR ! 🎉 \n`
         s += BLANK_LINE
     } else {
-        s += `**${errorsInModifiedFiles.length} typescript errors detected in the modified files.**  \n`
+        s += `**${errorsInModifiedFiles.length} ts errors detected in the modified files.**  \n`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, errorsInModifiedFiles)
         s += BLANK_LINE
@@ -56,7 +56,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
     if (newErrorsInModifiedFiles.length > 0) {
         s += `**${newErrorsInModifiedFiles.length} new errors added**  \n`
-        s += `*note : sometimes, new errors can be just same errors but with different locations*`
+        s += `*Note : in some cases, new errors can be just same errors but with different locations*`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, newErrorsInModifiedFiles)
         s += BLANK_LINE
@@ -70,7 +70,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
 }
 
-function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 0): string {
+function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 10): string {
 
     const shouldUseCollapsible = errors.length > thresholdCollapse
     let s = ``
@@ -80,7 +80,6 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 0
         s += BLANK_LINE
         s += BLANK_LINE
     } else {
-        s += `${title}  \n`
         s += BLANK_LINE
     }
 
@@ -117,6 +116,10 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
                 errors: [err]
             })
         }
+    })
+
+    errorsByFile.sort((errA, errB) => {
+        return -(errA.errors.length > errB.errors.length)
     })
 
     const shouldUseCollapsible = errorsByFile.length > thresholdCollapse

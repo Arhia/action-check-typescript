@@ -36,6 +36,8 @@ export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promi
     'false',
     '--incremental',
     'false',
+    '--watch',
+    'false'
   ]
   if (tsconfigPath) {
     execArgs.push('--project', tsconfigPath)
@@ -50,7 +52,7 @@ export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promi
   try {
     await exec('node', execArgs, options)
   } catch (error) {
-    setFailed('')
+    setFailed(error.message)
   }
 
   return {

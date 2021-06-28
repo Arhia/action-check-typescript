@@ -2,8 +2,24 @@ import { ErrorTs } from "../main"
 
 export function parseOutputTsc(output: string): ErrorTs[] {
     const lines = output.split('\n').map(line => line.trim()).filter(line => !!line)
-    const errorsParsed = lines.map(line => parseTscErrorLine(line, tscMatcher))
-    return errorsParsed
+
+    const errorsParsed: ErrorTs[] = []
+    let lastTrueError: ErrorTs
+    lines.forEach(line => {
+        const errParsed = parseTscErrorLine(line, tscMatcher)
+        if (errParsed.fileName) {
+            errorsParsed.push(errParsed)
+            lastTrueError = errParsed
+        } else {
+            if (lastTrueError) {
+                lastTrueError.extraMsg = (lastTrueError.extraMsg ? `${lastTrueError.extraMsg}\n${line}` : line)
+            }
+        }
+
+    })
+
+    const errorsFiltered = errorsParsed.filter(err => !!err.fileName)
+    return errorsFiltered
 }
 
 interface Matcher {

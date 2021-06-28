@@ -1,6 +1,7 @@
 name: 'Action Check Typescript errors'
 description: 'Check tsc errors and compare errors wih base branch'
 author: 'Arhia'
+icon: box
 inputs:
   repo-token:
     description: 'Token for the repository. Can be passed in using {{ secrets.GITHUB_TOKEN }}'

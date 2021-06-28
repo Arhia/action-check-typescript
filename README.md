@@ -2,100 +2,88 @@
   <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
 </p>
 
-# Create a JavaScript Action using TypeScript
+# action-check-typescript  
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+A Github action that compile ts files and display the errors found in whole codebase and in files changed in PR.  
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+**Used in production at [Arhia](https://github.com/Arhia)**  
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+- Automatically uses `yarn` or `npm ci` when lockfiles are present
+- Builds your PR, then run tsc to detect errors  🔍 
+- Compare ts errors in base branch and in PR branch to detect new errors (handle automatically line numbers offset)  💪
+- Doesn't upload anything or rely on centralized storage  👐 
 
-## Create an action from this template
+## Usage
 
-Click the `Use this Template` and provide the new repo details for your action
+action-check-typescript rely on two other actions (big thanks to the authors ! ❤️) to : 
+- Equip-Collaboration/diff-line-numbers : retrieve line numbers of added and removed lines in files changed
+- futuratrepadeira/changed-files : list files added, modified and deleted
 
-## Code in Main
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+Add a workflow (eg `.github/workflows/check_ts.yml`):
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+name: 'check-ts'
+on:
+  pull_request:
+jobs:
+  ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get diff lines
+        id: diff
+        uses: Equip-Collaboration/diff-line-numbers@v1.0.0
+        with:
+          include: '["\\.ts$"]'
+      - name: Detecting files changed
+        id: files
+        uses: futuratrepadeira/changed-files@v3.2.1
+        with:
+          repo-token: ${{ github.token }}
+          pattern: '^.*\.ts$'
+      - name: List files changed (you can remove this step, for monitoring only)
+        run: |
+          echo 'Files modified: ${{steps.files.outputs.files_updated}}'
+          echo 'Files added: ${{steps.files.outputs.files_created}}'
+          echo 'Files removed: ${{steps.files.outputs.files_deleted}}'
+      - uses: Arhia/action-check-typescript@v2.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          use-check: true
+          check-fail-mode: added
+          files-changed: ${{steps.files.outputs.files_updated}}
+          files-added: ${{steps.files.outputs.files_created}}
+          files-deleted: ${{steps.files.outputs.files_deleted}}
+          line-numbers: ${{steps.diff.outputs.lineNumbers}}
+```
+## Customize the check  
+
+By default, this action doesn't perform a status check (aka pass/fail).  
+
+You need to set `use-check` on true to run a status check.    
+
+```yaml
+  use-check: true
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+How the check status is determined depends on the value of `check-fail-mode`  
 
-## Usage:
+Value|Behaviour
+-- | -- 
+`added`| Check fails if some errors are added in the files added/modified in the PR branch.  
+`errors_in_pr`| Check fails if any errors are present in the files added/modified in the PR branch (even if already in base branche).  
+`errors_in_code`| Check fails if any errors are present in the whole branch.  
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+## Use a specific tsconfig file
+
+By default, this actions uses tsconfig file located at './tsconfig.json'   
+
+You may want to use a different file for this action, in order to change tsc behaviour.  
+For example, if you use `watch:true` in your regular tsconfig file, you should disable watching mode.  
+
+In order to do this, you would create a specific tsconfig file (eg name `tsconfig.check.ts`) and setting accordingly the
+parameter `ts-config-path` : 
+
+```yml
+  ts-config-path: './tsconfig.check.json'
+```

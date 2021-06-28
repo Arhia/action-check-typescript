@@ -21,6 +21,8 @@ export type ErrorTs = {
   code: number
   severity?: string
   message: string
+  /** for long error messages */
+  extraMsg?: string
 }
 interface PullRequest {
   number: number;
@@ -78,15 +80,9 @@ async function run(): Promise<void> {
 
     startGroup(`[current branch] compile ts files`)
 
-    const { fileNames: rootNamesPr, rawParsing: rawParsingPr } = parseTsConfigFile(tsconfigPath)
+    const { rawParsing: rawParsingPr } = parseTsConfigFile(tsconfigPath)
 
     info(`[current branch] : tsconfig raw parsing :\n ${JSON.stringify(rawParsingPr)}`)
-
-    if (!rootNamesPr.length) {
-      error(`[current branch] Aucun fichier trouvé à compiler `)
-    }
-
-    info(`[current branch] : rootNames :\n ${rootNamesPr.join('\n')}`)
 
     const { output: tscOutputCurrent } = await runTscCli({
       workingDir,
@@ -95,8 +91,11 @@ async function run(): Promise<void> {
 
     const errorsPr = parseOutputTsc(tscOutputCurrent)
 
-    info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
-
+    if (errorsPr.length) {
+      info(`[current branch] ts errors : 10 first:\n ${JSON.stringify(errorsPr.slice(0, 10))}`)
+    } else {
+      info(`[current branch] : no error detected`)
+    }
     endGroup()
 
     // ***********************************************************************************************
