@@ -1,6 +1,10 @@
 import { compareErrors, FileWithLineNumbers } from '../src/compareErrors'
 import { ErrorTs } from '../src/main'
-
+import { outputBaseBranch } from './test_compare_1/outputBaseBranch'
+import { errorsCurrentBranch } from './test_compare_1/errorsCurrentBranch'
+import { errorsBaseBranch } from './test_compare_1/erreursBaseBranch'
+import { lineNumbers } from './test_compare_1/lineNumbers'
+import { filesAdded, filesModified, filesRemoved } from './test_compare_1/filesChanged'
 
 import { parseTscErrorLine, tscMatcher, parseOutputTsc } from '../src/tscHelpers/parseOutputTsc'
 
@@ -33,25 +37,25 @@ test('3. compareErrors', () => {
 
   const errorsBefore: ErrorTs[] = [{
     message: 'test',
-    line: 3,
-    column: 20,
-    code: 60312,
+    line: '3',
+    column: '20',
+    code: '60312',
     fileName: 'src/fakeErrors.ts',
     fileNameResolved: 'src/fakeErrors.ts'
   }]
 
   const errorsAfter: ErrorTs[] = [{
     message: 'test',
-    line: 3,
-    column: 20,
-    code: 60312,
+    line: '3',
+    column: '20',
+    code: '60312',
     fileName: 'src/fakeErrors.ts',
     fileNameResolved: 'src/fakeErrors.ts'
   }, {
     message: 'test2',
-    line: 10,
-    column: 20,
-    code: 60312,
+    line: '10',
+    column: '20',
+    code: '60312',
     fileName: 'src/fakeErrors.ts',
     fileNameResolved: 'src/fakeErrors.ts'
   }]
@@ -76,3 +80,24 @@ test('3. compareErrors', () => {
 
 })
 
+test('4. Parsing output', () => {
+  const parsedErrors = parseOutputTsc(outputBaseBranch)
+  expect(parsedErrors).toHaveLength(1252)
+  expect(parsedErrors[0]).toHaveProperty('extraMsg')
+  expect(parsedErrors[0].extraMsg).toEqual("Type 'LastCnt' is missing the following properties from type 'SelectionPeriaDataCnt': catc_id, src_id")
+})
+
+test('5. compare errors', () => {
+
+  const resultCompareErrors = compareErrors({
+    errorsBefore: errorsBaseBranch as unknown as ErrorTs[],
+    errorsAfter: errorsCurrentBranch as unknown as ErrorTs[],
+    filesChanged: filesModified.split(' '),
+    filesAdded: filesAdded.split(' '),
+    filesDeleted: filesRemoved.split(' '),
+    lineNumbers: lineNumbers
+  })
+
+  expect(resultCompareErrors.errorsAdded).toHaveLength(15)
+
+})

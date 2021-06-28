@@ -15,10 +15,10 @@ import { parseOutputTsc } from './tscHelpers/parseOutputTsc'
 
 export type ErrorTs = {
   fileName: string
-  line: number
-  column: number
-  fileNameResolved: string
-  code: number
+  line: string
+  column: string
+  fileNameResolved?: string
+  code: string
   severity?: string
   message: string
   /** for long error messages */
