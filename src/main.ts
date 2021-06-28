@@ -21,6 +21,8 @@ export type ErrorTs = {
   code: number
   severity?: string
   message: string
+  /** for long error messages */
+  extraMsg?: string
 }
 interface PullRequest {
   number: number;
