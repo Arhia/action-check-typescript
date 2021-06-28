@@ -118,6 +118,10 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
         }
     })
 
+    errorsByFile.sort((errA, errB) => {
+        return -(errA.errors.length > errB.errors.length)
+    })
+
     const shouldUseCollapsible = errorsByFile.length > thresholdCollapse
     let s = ``
 
