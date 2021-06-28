@@ -130,6 +130,7 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
         s += BLANK_LINE
         s += BLANK_LINE
     } else {
+        s += BLANK_LINE
         s += `${title}  \n`
         s += BLANK_LINE
     }
@@ -144,6 +145,8 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
     if (shouldUseCollapsible) {
         s += BLANK_LINE
         s += `</details>  \n`
+    } else {
+        s += BLANK_LINE
     }
 
     return s
