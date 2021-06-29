@@ -48,7 +48,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         s += `Well done: no ts error in files changed in this PR! 🎉 \n`
         s += BLANK_LINE
     } else {
-        s += `** ${errorsInModifiedFiles.length} ts error${errorsInModifiedFiles.length > 1 ? 's' : 's'} detected in the modified files.**  \n`
+        s += `**${errorsInModifiedFiles.length} ts error${errorsInModifiedFiles.length > 1 ? 's' : 's'} detected in the modified files.**  \n`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, errorsInModifiedFiles)
         s += BLANK_LINE
@@ -56,7 +56,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
 
     if (newErrorsInModifiedFiles.length > 0) {
         s += BLANK_LINE
-        s += `** ${newErrorsInModifiedFiles.length} new error${newErrorsInModifiedFiles.length > 1 ? 's' : ''} added **  \n`
+        s += `**${newErrorsInModifiedFiles.length} new error${newErrorsInModifiedFiles.length > 1 ? 's' : ''} added** \n`
         s += `*Note : in some rare cases, new errors can be just same errors but with different locations*`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, newErrorsInModifiedFiles)
