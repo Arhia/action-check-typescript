@@ -210,8 +210,8 @@ async function run(): Promise<void> {
     if (args.checkFailMode === CHECK_FAIL_MODE.ON_ERRORS_ADDED_IN_PR) {
       shouldFailCheck = resultCompareErrors.errorsAdded.length > 0
       if (shouldFailCheck) {
-        title = `${errorsInModifiedFiles.length} ts errors added by this PR.`
-        summary = `${errorsInModifiedFiles.length} ts errors added by this PR.`
+        title = `${resultCompareErrors.errorsAdded.length} ts errors added by this PR.`
+        summary = `${resultCompareErrors.errorsAdded.length} ts errors added by this PR.`
       } else {
         title = `No ts errors added.`
         summary = `No ts errors added.`
@@ -222,17 +222,17 @@ async function run(): Promise<void> {
         title = `${errorsInModifiedFiles.length} ts errors present in modified files.`
         summary = `${errorsInModifiedFiles.length} ts errors present in modified files.`
       } else {
-        title = `No ts errors present in modified files.`
-        summary = `No ts errors present in modified files.`
+        title = `No ts errors in modified files.`
+        summary = `No ts errors in modified files.`
       }
     } else if (args.checkFailMode === CHECK_FAIL_MODE.ON_ERRORS_PRESENT_IN_CODE) {
       shouldFailCheck = errorsPr.length > 0
       if (shouldFailCheck) {
-        title = `${errorsInModifiedFiles.length} ts errors present in the PR branch.`
-        summary = `${errorsInModifiedFiles.length} ts errors present in the PR branch.`
+        title = `${errorsPr.length} ts errors in the PR branch.`
+        summary = `${errorsPr.length} ts errors in the PR branch.`
       } else {
-        title = `No ts errors present in the PR branch.`
-        summary = `No ts errors present in the PR branch.`
+        title = `No ts errors in the PR branch.`
+        summary = `No ts errors in the PR branch.`
       }
     }
 
@@ -248,7 +248,6 @@ async function run(): Promise<void> {
       })
 
     }
-
 
   } catch (errorRun) {
     setFailed(errorRun.message)
