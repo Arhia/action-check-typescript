@@ -7,6 +7,7 @@ import { lineNumbers } from './test_compare_1/lineNumbers'
 import { filesAdded, filesModified, filesRemoved } from './test_compare_1/filesChanged'
 
 import { parseTscErrorLine, tscMatcher, parseOutputTsc } from '../src/tscHelpers/parseOutputTsc'
+import { getBodyComment } from '../src/getBodyComment'
 
 test('1. parse tsc error line', () => {
   const line = `src/main.ts(39,11): error TS1155: 'const' declarations must be initialized.`
@@ -87,7 +88,7 @@ test('4. Parsing output', () => {
   expect(parsedErrors[0].extraMsg).toEqual("Type 'LastCnt' is missing the following properties from type 'SelectionPeriaDataCnt': catc_id, src_id")
 })
 
-test('5. compare errors', () => {
+test('5. compare errors test 1', () => {
 
   const resultCompareErrors = compareErrors({
     errorsBefore: errorsBaseBranch as unknown as ErrorTs[],
@@ -99,5 +100,23 @@ test('5. compare errors', () => {
   })
 
   expect(resultCompareErrors.errorsAdded).toHaveLength(15)
+
+  const errorsInModifiedFiles = errorsCurrentBranch.filter(err => {
+    return filesModified.concat(filesAdded).includes(err.fileName)
+  })
+
+  const newErrorsInModifiedFiles = resultCompareErrors.errorsAdded.filter(err => {
+    return filesModified.concat(filesAdded).includes(err.fileName)
+  })
+
+  const comment = getBodyComment({
+    errorsInProjectBefore: errorsBaseBranch,
+    errorsInProjectAfter: errorsCurrentBranch,
+    newErrorsInProject: resultCompareErrors.errorsAdded,
+    errorsInModifiedFiles,
+    newErrorsInModifiedFiles
+  })
+
+  expect(comment).toMatch(/\*\*15 new errors added\*\*/)
 
 })

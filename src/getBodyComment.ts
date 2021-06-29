@@ -10,7 +10,7 @@ type Input = {
     newErrorsInModifiedFiles: ErrorTs[]
 }
 
-export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInModifiedFiles, newErrorsInModifiedFiles }: Input): string {
+export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInModifiedFiles, newErrorsInProject }: Input): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
     let s = `## Typescript errors check  \n`
@@ -54,12 +54,12 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
         s += BLANK_LINE
     }
 
-    if (newErrorsInModifiedFiles.length > 0) {
+    if (newErrorsInProject.length > 0) {
         s += BLANK_LINE
-        s += `**${newErrorsInModifiedFiles.length} new error${newErrorsInModifiedFiles.length > 1 ? 's' : ''} added** \n`
+        s += `**${newErrorsInProject.length} new error${newErrorsInProject.length > 1 ? 's' : ''} added** \n`
         s += `*Note : in some rare cases, new errors can be just same errors but with different locations*`
         s += BLANK_LINE
-        s += getListOfErrors(`Details`, newErrorsInModifiedFiles)
+        s += getListOfErrors(`Details`, newErrorsInProject)
         s += BLANK_LINE
     }
 
