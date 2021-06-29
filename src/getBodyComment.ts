@@ -77,7 +77,7 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5
     let s = ``
 
     if (shouldUseCollapsible) {
-        s += `< details > <summary>${title} </summary>  \n`
+        s += `<details><summary>${title} </summary>  \n`
         s += BLANK_LINE
         s += BLANK_LINE
     } else {
