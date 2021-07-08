@@ -129,11 +129,14 @@ test('5. compare errors test 1', () => {
   })
 
   expect(comment).toMatch(/\*\*15 new errors added\*\*/)
+  expect(comment).toMatch(/\*\*15 new errors added\*\*/)
 
 })
 
-test('6. escapeForMarkdown', () => {
-
+test('6.1 escapeForMarkdown', () => {
   expect(escapeForMarkdown('|')).toEqual("\\|")
+})
 
+test('6.2 escapeForMarkdown', () => {
+  expect(escapeForMarkdown("Type 'boolean' is not assignable to type 'string | number'.")).toEqual("Type 'boolean' is not assignable to type 'string \\| number'.")
 })
