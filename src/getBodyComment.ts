@@ -87,7 +87,7 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5
     s += `\nFilename|Location|Message\n`
     s += `-- | -- | -- \n`
     s += errors.map(err => {
-        return `${err.fileName}|${err.line}, ${err.column}|${err.message}`
+        return `${err.fileName}|${err.line}, ${err.column}|${escapeForMarkdown(err.message)}`
     }).join('\n')
 
 
@@ -98,6 +98,10 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5
 
     return s
 
+}
+
+export function escapeForMarkdown(s: string): string {
+    return s.replace(/\|/g, '\\|')
 }
 
 function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
