@@ -8,3 +8,4 @@ const bar = 1
 bar = 2
 
 let foo2: string | number = true
+// again
