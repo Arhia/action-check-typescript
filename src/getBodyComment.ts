@@ -20,14 +20,14 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     if (areStillErrors) {
         if (delta < 0) {
             s += BLANK_LINE
-            s += `Yeah, you have remove ${-delta} errors with this PR 👏  \n`
+            s += `Yeah, you have removed ${-delta} errors with this PR 👏  \n`
             s += BLANK_LINE
         } else if (delta > 0) {
             s += BLANK_LINE
             s += `Ohhh you have added ${delta} errors whith this PR 😥  \n`
             s += BLANK_LINE
         }
-        s += `**${errorsInProjectAfter.length} ts error${errorsInProjectAfter.length > 1 ? 's' : 's'} detected in all the codebase 😟.**  \n`
+        s += `**${errorsInProjectAfter.length} ts error${errorsInProjectAfter.length === 1 ? '' : 's'} detected in all the codebase 😟.**  \n`
         s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
         s += BLANK_LINE
         s += BLANK_LINE
@@ -35,20 +35,20 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     }
 
     if (!areStillErrors) {
-        s += `No ts error in the codebase ! 🎉  \n`
+        s += `No ts errors in the codebase ! 🎉  \n`
         s += BLANK_LINE
         if (delta < 0) {
-            s += `Congrats, you have remove ${-delta} ts error${-delta === 1 ? '' : 's'} with this PR 💪  \n`
+            s += `Congrats, you have removed ${-delta} ts error${-delta === 1 ? '' : 's'} with this PR 💪  \n`
             s += BLANK_LINE
         }
         return s
     }
 
     if (!errorsInModifiedFiles.length) {
-        s += `Well done: no ts error in files changed in this PR! 🎉 \n`
+        s += `Well done: no ts errors in files changed in this PR! 🎉 \n`
         s += BLANK_LINE
     } else {
-        s += `**${errorsInModifiedFiles.length} ts error${errorsInModifiedFiles.length > 1 ? 's' : 's'} detected in the modified files.**  \n`
+        s += `**${errorsInModifiedFiles.length} ts error${errorsInModifiedFiles.length === 1 ? '' : 's'} detected in the modified files.**  \n`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, errorsInModifiedFiles)
         s += BLANK_LINE
@@ -57,7 +57,7 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     if (newErrorsInProject.length > 0) {
         s += BLANK_LINE
         s += `**${newErrorsInProject.length} new error${newErrorsInProject.length > 1 ? 's' : ''} added** \n`
-        s += `*Note : in some rare cases, new errors can be just same errors but with different locations*`
+        s += `*Note : in some rare cases, new errors can be existing errors but with different locations*`
         s += BLANK_LINE
         s += getListOfErrors(`Details`, newErrorsInProject)
         s += BLANK_LINE
