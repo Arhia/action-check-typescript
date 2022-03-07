@@ -54,7 +54,7 @@ export function getAndValidateArgs(): Args {
     lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
     useCheck: getBooleanInput('use-check'),
     checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE,
-    outputSummaryErrors: getBooleanInput('outputSummaryErrors'),
+    outputSummaryErrors: getBooleanInput('output-summary-errors'),
     debug: getBooleanInput('debug')
   }
 
