@@ -28,6 +28,9 @@ inputs:
   check-fail-mode:
     description: "Allowed values : added, errors_in_pr, errors_in_code"
     required: true
+  output-summary-errors:
+    description: "Output a the counts of all errors in the project by file path"
+    default: true
   debug:
     description: "Set true to log ts errors in base branch and pr branc"
     default: false
