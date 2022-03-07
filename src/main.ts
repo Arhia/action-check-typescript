@@ -176,6 +176,8 @@ async function run(): Promise<void> {
         newErrorsInProject: resultCompareErrors.errorsAdded,
         errorsInModifiedFiles,
         newErrorsInModifiedFiles
+      }, {
+        outputSummaryErrors: args.outputSummaryErrors
       })
     }
     info(`comment body obtained`)

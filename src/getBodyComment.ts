@@ -10,7 +10,14 @@ type Input = {
     newErrorsInModifiedFiles: ErrorTs[]
 }
 
-export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, errorsInModifiedFiles, newErrorsInProject }: Input): string {
+type Options = {
+    outputSummaryErrors: boolean;
+}
+
+export function getBodyComment(
+    { errorsInProjectBefore, errorsInProjectAfter, errorsInModifiedFiles, newErrorsInProject }: Input,
+    options: Options
+): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
     let s = `## Typescript errors check  \n`
@@ -28,7 +35,9 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
             s += BLANK_LINE
         }
         s += `**${errorsInProjectAfter.length} ts error${errorsInProjectAfter.length === 1 ? '' : 's'} detected in all the codebase 😟.**  \n`
-        s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
+        if(options.outputSummaryErrors) {
+            s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
+        }
         s += BLANK_LINE
         s += BLANK_LINE
 
