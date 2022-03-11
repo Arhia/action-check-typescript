@@ -57,6 +57,9 @@ export function getBodyComment(
             s += `Congrats, you have removed ${-delta} ts error${-delta === 1 ? '' : 's'} with this PR 💪  \n`
             s += BLANK_LINE
         }
+        s += BLANK_LINE
+        s += BLANK_LINE
+        s += `<sub>Generated for ${projectPath}</sub>`
         return s
     }
 
