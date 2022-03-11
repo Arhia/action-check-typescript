@@ -171,6 +171,20 @@ test('5.2 compare errors test with no summary output', () => {
 
 })
 
+test('5.3 comment output with no errors', () => {
+  const comment = getBodyComment({
+    errorsInProjectBefore: [],
+    errorsInProjectAfter: [],
+    newErrorsInProject: [],
+    errorsInModifiedFiles: [],
+    newErrorsInModifiedFiles: [],
+    projectPath: './test/tsconfig.json'
+  }, { outputSummaryErrors: true })
+
+  expect(comment).toMatch(/No ts errors in the codebase/);
+  expect(comment).toMatch(/Generated for \.\/test\/tsconfig\.json/);
+})
+
 test('6.1 escapeForMarkdown', () => {
   expect(escapeForMarkdown('|')).toEqual("\\|")
 })
