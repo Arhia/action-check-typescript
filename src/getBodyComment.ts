@@ -8,6 +8,7 @@ type Input = {
     newErrorsInProject: ErrorTs[]
     errorsInModifiedFiles: ErrorTs[]
     newErrorsInModifiedFiles: ErrorTs[]
+    projectPath: string;
 }
 
 type Options = {
@@ -15,7 +16,13 @@ type Options = {
 }
 
 export function getBodyComment(
-    { errorsInProjectBefore, errorsInProjectAfter, errorsInModifiedFiles, newErrorsInProject }: Input,
+    { 
+        errorsInProjectBefore,
+        errorsInProjectAfter,
+        errorsInModifiedFiles,
+        newErrorsInProject,
+        projectPath 
+    }: Input,
     options: Options
 ): string {
 
@@ -74,7 +81,7 @@ export function getBodyComment(
 
     s += BLANK_LINE
     s += BLANK_LINE
-    s += '<a href="https://github.com/Arhia/action-check-typescript"><sub>Arhia/action-check-typescript</sub></a>'
+    s += `<sub>Generated for ${projectPath}</sub>`
 
     return s
 

@@ -125,12 +125,14 @@ test('5.1 compare errors test 1', () => {
     errorsInProjectAfter: errorsCurrentBranch,
     newErrorsInProject: resultCompareErrors.errorsAdded,
     errorsInModifiedFiles,
-    newErrorsInModifiedFiles
+    newErrorsInModifiedFiles,
+    projectPath: './test/tsconfig.json'
   }, { outputSummaryErrors: true })
 
   expect(comment).toMatch(/\*\*15 new errors added\*\*/)
   expect(comment).toMatch(/\*\*15 new errors added\*\*/)
   expect(comment).toMatch(/Nb of errors/);
+  expect(comment).toMatch(/Generated for \.\/test\/tsconfig\.json/);
 
 })
 test('5.2 compare errors test with no summary output', () => {
@@ -159,7 +161,8 @@ test('5.2 compare errors test with no summary output', () => {
     errorsInProjectAfter: errorsCurrentBranch,
     newErrorsInProject: resultCompareErrors.errorsAdded,
     errorsInModifiedFiles,
-    newErrorsInModifiedFiles
+    newErrorsInModifiedFiles,
+    projectPath: './tsconfig.json',
   }, { outputSummaryErrors: false })
 
   expect(comment).toMatch(/\*\*15 new errors added\*\*/)

@@ -175,7 +175,8 @@ async function run(): Promise<void> {
         errorsInProjectAfter: errorsPr,
         newErrorsInProject: resultCompareErrors.errorsAdded,
         errorsInModifiedFiles,
-        newErrorsInModifiedFiles
+        newErrorsInModifiedFiles,
+        projectPath: args.tsConfigPath,
       }, {
         outputSummaryErrors: args.outputSummaryErrors
       })
