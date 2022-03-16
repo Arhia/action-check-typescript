@@ -20,7 +20,7 @@ inputs:
     default: ''
   line-numbers:
     description: "List of files with added and removed lines, use action 'Equip-Collaboration/diff-line-numbers' for that"
-  ts-config-paths:
+  projects:
     description: "Path of tsconfig files to compile. default is '.'"
     default: './tsconfig.json'
   use-check:
