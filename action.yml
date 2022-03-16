@@ -1,6 +1,6 @@
 name: 'Action Check Typescript errors'
 description: 'Check tsc errors and compare errors wih base branch'
-author: 'Arhia'
+author: 'Arhia & ProdigySim'
 icon: box
 inputs:
   repo-token:
