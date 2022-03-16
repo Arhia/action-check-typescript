@@ -54,7 +54,7 @@ function parseProjects(projects: string): Project[] {
   return projects.split('\n')
     .map(x => x.trim())
     .map(x => {
-      const parts = x.split(':')
+      const parts = x.split(':').map(y => y.trim())
       if(parts.length === 1) {
         return {
           tsConfigPath: parts[0],
