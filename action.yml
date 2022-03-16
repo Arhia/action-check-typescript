@@ -1,6 +1,6 @@
 name: 'Action Check Typescript errors'
 description: 'Check tsc errors and compare errors wih base branch'
-author: 'Arhia'
+author: 'Arhia & ProdigySim'
 icon: box
 inputs:
   repo-token:
@@ -20,8 +20,8 @@ inputs:
     default: ''
   line-numbers:
     description: "List of files with added and removed lines, use action 'Equip-Collaboration/diff-line-numbers' for that"
-  ts-config-path:
-    description: "Path of tsconfig file. default is '.'"
+  projects:
+    description: "Path of tsconfig files to compile. default is '.'"
     default: './tsconfig.json'
   use-check:
     description: 'Report status as a CI Check'

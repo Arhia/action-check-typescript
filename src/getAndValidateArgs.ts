@@ -5,10 +5,17 @@ export const enum CHECK_FAIL_MODE {
   ON_ERRORS_PRESENT_IN_PR = 'errors_in_pr',
   ON_ERRORS_PRESENT_IN_CODE = 'errors_in_code'
 }
-type Args = {
+
+
+
+export type Project = {
+  name?: string;
+  tsConfigPath: string;
+}
+export type Args = {
   repoToken: string
   directory: string
-  tsConfigPath: string
+  projects: Project[]
   filesChanged: string[]
   filesAdded: string[]
   filesDeleted: string[]
@@ -43,11 +50,31 @@ type Args = {
   debug: boolean
 }
 
+function parseProjects(projects: string): Project[] {
+  return projects.split('\n')
+    .map(x => x.trim())
+    .map(x => {
+      const parts = x.split(':').map(y => y.trim())
+      if(parts.length === 1) {
+        return {
+          tsConfigPath: parts[0],
+        }
+      } else if (parts.length === 2) {
+        return {
+          name: parts[0],
+          tsConfigPath: parts[1],
+        }
+      } else {
+        throw new Error(`Invalid value ${x} for input projects`)
+      }
+    })
+}
+
 export function getAndValidateArgs(): Args {
   const args = {
     repoToken: getInput('repo-token', { required: true, trimWhitespace: true }),
     directory: getInput('directory', { trimWhitespace: true }),
-    tsConfigPath: getInput('ts-config-path', { trimWhitespace: true, required: true }),
+    projects: parseProjects(getInput('projects', { trimWhitespace: true, required: true })),
     filesChanged: (getInput('files-changed') ?? "").split(" "),
     filesAdded: (getInput('files-added') ?? "").split(" "),
     filesDeleted: (getInput('files-deleted') ?? "").split(" "),

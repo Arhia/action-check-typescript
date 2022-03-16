@@ -3,7 +3,7 @@ import { ErrorTs } from './main'
 
 export type FileWithLineNumbers = { path: string, added: number[], removed: number[] }
 
-type Input = {
+export type CompareErrorsInput = {
     errorsBefore: ErrorTs[]
     errorsAfter: ErrorTs[]
     filesChanged: string[]
@@ -19,7 +19,7 @@ type Result = {
 /**
  * A partir des erreurs ts de la base branche
  */
-export function compareErrors({ errorsBefore, errorsAfter, filesChanged, filesAdded, lineNumbers }: Input): Result {
+export function compareErrors({ errorsBefore, errorsAfter, filesChanged, filesAdded, lineNumbers }: CompareErrorsInput): Result {
 
     /*
     on va déterminer numéro de ligne dans correspondant dans le fichier modifié dans la PR
