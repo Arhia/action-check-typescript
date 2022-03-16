@@ -1,33 +1,36 @@
-import { ErrorTs } from "./main"
+import { ErrorTs, ProcessedProject } from "./main"
 
 const BLANK_LINE = '  \n'
 
-type Input = {
+type ProjectInput = {
     errorsInProjectBefore: ErrorTs[]
     errorsInProjectAfter: ErrorTs[]
     newErrorsInProject: ErrorTs[]
     errorsInModifiedFiles: ErrorTs[]
     newErrorsInModifiedFiles: ErrorTs[]
-    projectPath: string;
+    project: ProcessedProject;
 }
 
-type Options = {
-    outputSummaryErrors: boolean;
-}
 
-export function getBodyComment(
+export function getBodyComment(inputs: ProjectInput[]): string {
+    return [
+        '## TypeScript Errors Check',
+        BLANK_LINE,
+        inputs.map(getBodyCommentForProject).join(BLANK_LINE)
+    ].join('')
+}
+export function getBodyCommentForProject(
     { 
         errorsInProjectBefore,
         errorsInProjectAfter,
         errorsInModifiedFiles,
         newErrorsInProject,
-        projectPath 
-    }: Input,
-    options: Options
+        project, 
+    }: ProjectInput,
 ): string {
 
     const delta = errorsInProjectAfter.length - errorsInProjectBefore.length
-    let s = `## Typescript errors check  \n`
+    let s = `### ${project.name}  \n`
 
     const areStillErrors = !!errorsInProjectAfter.length
 
@@ -42,24 +45,17 @@ export function getBodyComment(
             s += BLANK_LINE
         }
         s += `**${errorsInProjectAfter.length} ts error${errorsInProjectAfter.length === 1 ? '' : 's'} detected in all the codebase 😟.**  \n`
-        if(options.outputSummaryErrors) {
-            s += getNbOfErrorsByFile(`Details`, errorsInProjectAfter)
-        }
         s += BLANK_LINE
         s += BLANK_LINE
-
     }
 
     if (!areStillErrors) {
-        s += `No ts errors in the codebase ! 🎉  \n`
+        s += `No ts errors in the project ! 🎉  \n`
         s += BLANK_LINE
         if (delta < 0) {
             s += `Congrats, you have removed ${-delta} ts error${-delta === 1 ? '' : 's'} with this PR 💪  \n`
             s += BLANK_LINE
         }
-        s += BLANK_LINE
-        s += BLANK_LINE
-        s += `<sub>Generated for ${projectPath}</sub>`
         return s
     }
 
@@ -81,10 +77,6 @@ export function getBodyComment(
         s += getListOfErrors(`Details`, newErrorsInProject)
         s += BLANK_LINE
     }
-
-    s += BLANK_LINE
-    s += BLANK_LINE
-    s += `<sub>Generated for ${projectPath}</sub>`
 
     return s
 

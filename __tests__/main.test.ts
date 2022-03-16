@@ -99,7 +99,7 @@ test('4. Parsing output', () => {
   expect(parsedErrors[0].extraMsg).toEqual("Type 'LastCnt' is missing the following properties from type 'SelectionPeriaDataCnt': catc_id, src_id")
 })
 
-test('5.1 compare errors test 1', () => {
+test('5.1 compare errors test with no summary output', () => {
 
   const resultCompareErrors = compareErrors({
     errorsBefore: errorsBaseBranch as unknown as ErrorTs[],
@@ -120,50 +120,18 @@ test('5.1 compare errors test 1', () => {
     return filesModified.concat(filesAdded).includes(err.fileName)
   })
 
-  const comment = getBodyComment({
+  const comment = getBodyComment([{
     errorsInProjectBefore: errorsBaseBranch,
     errorsInProjectAfter: errorsCurrentBranch,
     newErrorsInProject: resultCompareErrors.errorsAdded,
     errorsInModifiedFiles,
     newErrorsInModifiedFiles,
-    projectPath: './test/tsconfig.json'
-  }, { outputSummaryErrors: true })
-
-  expect(comment).toMatch(/\*\*15 new errors added\*\*/)
-  expect(comment).toMatch(/\*\*15 new errors added\*\*/)
-  expect(comment).toMatch(/Nb of errors/);
-  expect(comment).toMatch(/Generated for \.\/test\/tsconfig\.json/);
-
-})
-test('5.2 compare errors test with no summary output', () => {
-
-  const resultCompareErrors = compareErrors({
-    errorsBefore: errorsBaseBranch as unknown as ErrorTs[],
-    errorsAfter: errorsCurrentBranch as unknown as ErrorTs[],
-    filesChanged: filesModified.split(' '),
-    filesAdded: filesAdded.split(' '),
-    filesDeleted: filesRemoved.split(' '),
-    lineNumbers: lineNumbers
-  })
-
-  expect(resultCompareErrors.errorsAdded).toHaveLength(15)
-
-  const errorsInModifiedFiles = errorsCurrentBranch.filter(err => {
-    return filesModified.concat(filesAdded).includes(err.fileName)
-  })
-
-  const newErrorsInModifiedFiles = resultCompareErrors.errorsAdded.filter(err => {
-    return filesModified.concat(filesAdded).includes(err.fileName)
-  })
-
-  const comment = getBodyComment({
-    errorsInProjectBefore: errorsBaseBranch,
-    errorsInProjectAfter: errorsCurrentBranch,
-    newErrorsInProject: resultCompareErrors.errorsAdded,
-    errorsInModifiedFiles,
-    newErrorsInModifiedFiles,
-    projectPath: './tsconfig.json',
-  }, { outputSummaryErrors: false })
+    project: {
+      name: 'TEST PROJECT',
+      tsConfigPath: '',
+      fullTsConfigPath: ''
+    }
+  }])
 
   expect(comment).toMatch(/\*\*15 new errors added\*\*/)
   expect(comment).toMatch(/\*\*15 new errors added\*\*/)
@@ -171,18 +139,22 @@ test('5.2 compare errors test with no summary output', () => {
 
 })
 
-test('5.3 comment output with no errors', () => {
-  const comment = getBodyComment({
+test('5.2 comment output with no errors', () => {
+  const comment = getBodyComment([{
     errorsInProjectBefore: [],
     errorsInProjectAfter: [],
     newErrorsInProject: [],
     errorsInModifiedFiles: [],
     newErrorsInModifiedFiles: [],
-    projectPath: './test/tsconfig.json'
-  }, { outputSummaryErrors: true })
+    project: {
+      name: 'TEST PROJECT',
+      tsConfigPath: '',
+      fullTsConfigPath: ''
+    }
+  }])
 
-  expect(comment).toMatch(/No ts errors in the codebase/);
-  expect(comment).toMatch(/Generated for \.\/test\/tsconfig\.json/);
+  expect(comment).toMatch(/No ts errors in the project/);
+  expect(comment).toMatch(/TEST PROJECT/);
 })
 
 test('6.1 escapeForMarkdown', () => {
