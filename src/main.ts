@@ -290,8 +290,8 @@ async function run(): Promise<void> {
     const finalResults: ProjectResult[] = []
     for(let i = 0 ; i < projects.length; i++) {
       const project = projects[i]
-      const errorsBefore = resultsPr[i].errors
-      const errorsAfter = resultsBaseBranch[i].errors
+      const errorsBefore = resultsBaseBranch[i].errors
+      const errorsAfter = resultsPr[i].errors
       const res = buildProjectResult({
         ...args,
         project,
