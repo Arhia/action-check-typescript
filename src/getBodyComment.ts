@@ -83,7 +83,6 @@ export function getBodyCommentForProject(
 }
 
 function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
-
     const shouldUseCollapsible = errors.length > thresholdCollapse
     let s = ``
 
@@ -98,7 +97,8 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5
     s += `\nFilename|Location|Message\n`
     s += `-- | -- | -- \n`
     s += errors.map(err => {
-        return `${err.fileName}|${err.line}, ${err.column}|${escapeForMarkdown(err.message)}`
+        const message = escapeForMarkdown(shortenMessage(err.message))
+        return `${err.fileName}|${err.line}, ${err.column}|${message}`
     }).join('\n')
 
 
@@ -108,60 +108,23 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5
     }
 
     return s
-
+}
+/**
+ * Try to intelligently shorten TS error messages.
+ * Captures quoted types and shortens them to 100 characters.
+ * @param s TS Error message
+ * @returns shortened error message
+ */
+function shortenMessage(s: string): string{
+    return s.replace(/'(.*?)'/g, (match, p1) => {
+        const typeStr = p1.substring(0, 97)
+        if(typeStr.length !== p1.length) {
+            return `'${typeStr}...'`
+        }
+        return `'${typeStr}`
+    })
 }
 
 export function escapeForMarkdown(s: string): string {
     return s.replace(/\|/g, '\\|')
-}
-
-function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
-
-    const errorsByFile: {
-        fileName: string
-        errors: ErrorTs[]
-    }[] = []
-
-    errors.forEach(err => {
-        const errByFileFound = errorsByFile.find(o => o.fileName === err.fileName)
-        if (errByFileFound) {
-            errByFileFound.errors.push(err)
-        } else {
-            errorsByFile.push({
-                fileName: err.fileName,
-                errors: [err]
-            })
-        }
-    })
-
-    errorsByFile.sort((errA, errB) => {
-        return -(errA.errors.length > errB.errors.length)
-    })
-
-    const shouldUseCollapsible = errorsByFile.length > thresholdCollapse
-    let s = ``
-
-    if (shouldUseCollapsible) {
-        s += `<details><summary>${title}</summary>  \n`
-        s += BLANK_LINE
-        s += BLANK_LINE
-    } else {
-        s += `${title}  \n`
-        s += BLANK_LINE
-    }
-
-    s += `\nFilename|Nb of errors\n`
-    s += `-- | -- \n`
-    s += errorsByFile.map(err => {
-        return `${err.fileName}|${err.errors.length}`
-    }).join('\n')
-
-
-    if (shouldUseCollapsible) {
-        s += BLANK_LINE
-        s += `</details>  \n`
-    }
-
-    return s
-
 }
