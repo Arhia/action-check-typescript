@@ -1,4 +1,4 @@
-import * as globby from 'globby'
+import { globbySync } from 'globby'
 import * as path from 'path'
 import { info } from '@actions/core'
 interface Options {
@@ -17,6 +17,6 @@ export function getFilesToCompile({ workingDir, rootDir, include, exclude }: Opt
 
     const patterns = positivePatterns.concat(negatePatterns)
     info(`getFilesToCompile : patterns applied ${JSON.stringify(patterns)}`)
-    return globby.sync(patterns)
+    return globbySync(patterns)
 
 }

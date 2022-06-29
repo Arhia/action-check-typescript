@@ -20,16 +20,16 @@ export async function checkoutAndInstallBaseBranch({ installScript, payload, exe
         await exec(`git fetch -n origin ${payload.pull_request!.base.ref}`)
         info('successfully fetched base.ref')
     } catch (errFetchBaseRef) {
-        info(`fetching base.ref failed ${errFetchBaseRef.message}`)
+        info(`fetching base.ref failed ${(errFetchBaseRef as Error).message}`)
         try {
             await exec(`git fetch -n origin ${payload.pull_request!.base.sha}`)
             info('successfully fetched base.sha')
         } catch (errFetchBaseSha) {
-            info(`fetching base.sha failed ${errFetchBaseSha.message}`)
+            info(`fetching base.sha failed ${(errFetchBaseSha as Error).message}`)
             try {
                 await exec(`git fetch -n`)
             } catch (errFetch) {
-                info(`fetch failed ${errFetch.message}`)
+                info(`fetch failed ${(errFetch as Error).message}`)
             }
         }
     }

@@ -19,7 +19,7 @@ export function parseTsConfigFile(configPath: string): TsConfig {
         Content of file :\n
         ${content}
         Error\n
-        ${error.message}`
+        ${(error as Error).message}`
         )
     }
     return config
