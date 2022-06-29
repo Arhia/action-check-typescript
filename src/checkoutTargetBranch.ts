@@ -12,16 +12,16 @@ export async function checkoutTargetBranch(context: Context, pr: Context['payloa
         await exec(`git fetch -n origin ${context.payload.pull_request!.base.ref}`)
         debug('successfully fetched base.ref')
     } catch (errFetchBaseRef) {
-        debug(`fetching base.ref failed ${errFetchBaseRef.message}`)
+        debug(`fetching base.ref failed ${(errFetchBaseRef as Error).message}`)
         try {
             await exec(`git fetch -n origin ${pr!.base.sha}`)
             debug('successfully fetched base.sha')
         } catch (errFetchBaseSha) {
-            debug(`fetching base.sha failed ${errFetchBaseSha.message}`)
+            debug(`fetching base.sha failed ${(errFetchBaseSha as Error).message}`)
             try {
                 await exec(`git fetch -n`)
             } catch (errFetch) {
-                debug(`fetch failed ${errFetch.message}`)
+                debug(`fetch failed ${(errFetch as Error).message}`)
             }
         }
     }

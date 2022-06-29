@@ -181,13 +181,13 @@ async function run(): Promise<void> {
     info(`comment body obtained`)
 
     try {
-      await octokit.issues.createComment(comment)
+      await octokit.rest.issues.createComment(comment)
     } catch (e) {
-      info(`Error creating comment: ${e.message}`)
+      info(`Error creating comment: ${(e as Error).message}`)
       info(`Submitting a PR review comment instead...`)
       try {
         const issue = context.issue || pr
-        await octokit.pulls.createReview({
+        await octokit.rest.pulls.createReview({
           owner: issue.owner,
           repo: issue.repo,
           pull_number: issue.number,
@@ -195,7 +195,7 @@ async function run(): Promise<void> {
           body: comment.body
         })
       } catch (errCreateComment) {
-        info(`Error creating PR review ${errCreateComment.message}`)
+        info(`Error creating PR review ${(errCreateComment as Error).message}`)
       }
     }
 
@@ -250,7 +250,7 @@ async function run(): Promise<void> {
     }
 
   } catch (errorRun) {
-    setFailed(errorRun.message)
+    setFailed((errorRun as Error).message)
   }
 }
 

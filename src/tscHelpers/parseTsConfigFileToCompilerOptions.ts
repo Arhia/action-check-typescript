@@ -19,7 +19,7 @@ export function parseTsConfigFile(configPath: string): ResultParsingTsConfig {
         parsed = ts.parseJsonConfigFileContent(rawParsing, ts.sys, path.dirname(configPath))
         compilerOptions = parsed.options
     } catch (error) {
-        throw new Error(`Error while parsing tsconfig and converting to compiler options \n ${error.message}`)
+        throw new Error(`Error while parsing tsconfig and converting to compiler options \n ${(error as Error).message}`)
     }
 
     if (parsed.errors && parsed.errors.length) {
