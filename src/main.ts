@@ -246,7 +246,8 @@ async function run(): Promise<void> {
           summary: summary
         }
       })
-
+    } else if (shouldFailCheck) {
+      setFailed(summary)
     }
 
   } catch (errorRun) {
