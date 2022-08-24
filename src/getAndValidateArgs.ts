@@ -5,6 +5,13 @@ export const enum CHECK_FAIL_MODE {
   ON_ERRORS_PRESENT_IN_PR = 'errors_in_pr',
   ON_ERRORS_PRESENT_IN_CODE = 'errors_in_code'
 }
+
+export const enum OUTPUT_BEHAVIOUR {
+  COMMENT = 'comment',
+  ANNOTATE = 'annotate',
+  COMMENT_AND_ANNOTATE = 'both'
+}
+
 type Args = {
   repoToken: string
   directory: string
@@ -34,11 +41,12 @@ type Args = {
    *             2
    *         ]
    *     }
-   * ] 
+   * ]
    */
   lineNumbers: { path: string, added: number[], removed: number[] }[]
   useCheck: boolean
-  checkFailMode: CHECK_FAIL_MODE,
+  checkFailMode: CHECK_FAIL_MODE
+  outputBehaviour: OUTPUT_BEHAVIOUR
   debug: boolean
 }
 
@@ -53,6 +61,7 @@ export function getAndValidateArgs(): Args {
     lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
     useCheck: getBooleanInput('use-check'),
     checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE,
+    outputBehaviour: getInput('output-behaviour') as OUTPUT_BEHAVIOUR,
     debug: getBooleanInput('debug')
   }
 
@@ -62,6 +71,14 @@ export function getAndValidateArgs(): Args {
     CHECK_FAIL_MODE.ON_ERRORS_PRESENT_IN_PR
   ].includes(args.checkFailMode)) {
     throw new Error(`Invalid value ${args.checkFailMode} for input check-fail-mode`)
+  }
+
+  if (![
+    OUTPUT_BEHAVIOUR.COMMENT,
+    OUTPUT_BEHAVIOUR.ANNOTATE,
+    OUTPUT_BEHAVIOUR.COMMENT_AND_ANNOTATE
+  ].includes(args.outputBehaviour)) {
+    throw new Error(`Invalid value ${args.outputBehaviour} for input output-behaviour`)
   }
 
   return args
