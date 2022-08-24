@@ -24,12 +24,6 @@ export type ErrorTs = {
   /** for long error messages */
   extraMsg?: string
 }
-interface PullRequest {
-  number: number;
-  html_url?: string
-  body?: string
-  changed_files: number
-}
 
 async function run(): Promise<void> {
   try {
