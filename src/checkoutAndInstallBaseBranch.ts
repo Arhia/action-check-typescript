@@ -15,15 +15,15 @@ export async function checkoutAndInstallBaseBranch({ installScript, payload, exe
     startGroup(`[base branch] Checkout target branch`)
     let baseRef
     try {
-        baseRef = payload.base.ref
-        if (!baseRef) throw Error('missing payload.pull_request.base.ref')
+        baseRef = payload.pull_request!.base.ref
+        if (!baseRef) throw Error('missing context.payload.pull_request.base.ref')
         await exec(`git fetch -n origin ${payload.pull_request!.base.ref}`)
-        info('successfully fetched base.ref')
+        info('successfully fetched pull_request.base.ref')
     } catch (errFetchBaseRef) {
         info(`fetching base.ref failed ${(errFetchBaseRef as Error).message}`)
         try {
             await exec(`git fetch -n origin ${payload.pull_request!.base.sha}`)
-            info('successfully fetched base.sha')
+            info('successfully fetched pull_request.base.sha')
         } catch (errFetchBaseSha) {
             info(`fetching base.sha failed ${(errFetchBaseSha as Error).message}`)
             try {
@@ -36,7 +36,7 @@ export async function checkoutAndInstallBaseBranch({ installScript, payload, exe
 
     info('checking out and building base commit')
     try {
-        if (!baseRef) throw Error('missing context.payload.base.ref')
+        if (!baseRef) throw Error('missing context.payload.pull_request.base.ref')
         await exec(`git reset --hard ${baseRef}`)
     } catch (e) {
         await exec(`git reset --hard ${payload.pull_request!.base.sha}`)

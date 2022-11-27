@@ -29,7 +29,7 @@ jobs:
   ts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get diff lines
         id: diff
         uses: Equip-Collaboration/diff-line-numbers@v1.0.0
@@ -46,7 +46,7 @@ jobs:
           echo 'Files modified: ${{steps.files.outputs.files_updated}}'
           echo 'Files added: ${{steps.files.outputs.files_created}}'
           echo 'Files removed: ${{steps.files.outputs.files_deleted}}'
-      - uses: Arhia/action-check-typescript@v2.0
+      - uses: Arhia/action-check-typescript@v0.11
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           use-check: true
