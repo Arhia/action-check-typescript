@@ -15,10 +15,10 @@ import { parseOutputTsc } from './tscHelpers/parseOutputTsc'
 
 export type ErrorTs = {
   fileName: string
-  line: string
-  column: string
+  line: number
+  column: number
   fileNameResolved?: string
-  code: string
+  code: number
   severity?: string
   message: string
   /** for long error messages */
@@ -164,8 +164,8 @@ async function run(): Promise<void> {
       resultCompareErrors.errorsAdded.forEach(err => {
         error(`${err.fileName}:${err.line}:${err.column} - ${err.message}`, {
           file: err.fileName,
-          startLine: parseInt(err.line),
-          startColumn: parseInt(err.column),
+          startLine: err.line,
+          startColumn: err.column,
           title: err.extraMsg ?? err.message
         })
       })
