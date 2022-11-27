@@ -32,5 +32,5 @@ inputs:
     description: "Set true to log ts errors in base branch and pr branc"
     default: false
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
