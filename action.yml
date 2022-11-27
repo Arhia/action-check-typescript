@@ -21,7 +21,7 @@ inputs:
   line-numbers:
     description: "List of files with added and removed lines, use action 'Equip-Collaboration/diff-line-numbers' for that"
   ts-config-path:
-    description: "Path of tsconfig file. default is '.'"
+    description: "Path of tsconfig file. default is './tsconfig.json'"
     default: './tsconfig.json'
   use-check:
     description: 'Report status as a CI Check'
@@ -31,7 +31,6 @@ inputs:
   output-behaviour:
     description: "Allowed values : comment, annotate, both"
     default: "comment"
-    required: false
   debug:
     description: "Set true to log ts errors in base branch and pr branch"
     default: false
