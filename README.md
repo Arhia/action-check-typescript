@@ -58,9 +58,7 @@ jobs:
 ```
 ## Customize the check  
 
-By default, this action doesn't perform a status check (aka pass/fail).  
-
-You need to set `use-check` on true to run a status check.    
+By default, this action performs a status check (aka pass/fail). 
 
 ```yaml
   use-check: true
