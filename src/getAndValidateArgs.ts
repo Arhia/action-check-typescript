@@ -52,15 +52,15 @@ type Args = {
 
 export function getAndValidateArgs(): Args {
   const args = {
-    repoToken: getInput('repo-token', { required: true, trimWhitespace: true }),
-    directory: getInput('directory', { trimWhitespace: true }),
-    tsConfigPath: getInput('ts-config-path', { trimWhitespace: true, required: true }),
+    repoToken: getInput('repo-token', { required: true }),
+    directory: getInput('directory'),
+    tsConfigPath: getInput('ts-config-path'),
     filesChanged: (getInput('files-changed') ?? "").split(" "),
     filesAdded: (getInput('files-added') ?? "").split(" "),
     filesDeleted: (getInput('files-deleted') ?? "").split(" "),
-    lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
+    lineNumbers: JSON.parse(getInput('line-numbers')),
     useCheck: getBooleanInput('use-check'),
-    checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE,
+    checkFailMode: getInput('check-fail-mode', { required: true }) as CHECK_FAIL_MODE,
     outputBehaviour: getInput('output-behaviour') as OUTPUT_BEHAVIOUR,
     debug: getBooleanInput('debug')
   }
