@@ -74,6 +74,14 @@ Value|Behaviour
 `errors_in_pr`| Check fails if any errors are present in the files added/modified in the PR branch (even if already in base branche).  
 `errors_in_code`| Check fails if any errors are present in the whole branch.  
 
+The output behaviour depends on the value of `output-behaviour`
+
+Value|Behaviour
+-- | --
+`comment` | Default, comments on the PR with the errors found for this run.
+`annotate` | Uses github line annotations with the errors found for this run.
+`both` | Does both of the above.
+
 ## Use a specific tsconfig file
 
 By default, this actions uses tsconfig file located at './tsconfig.json'   

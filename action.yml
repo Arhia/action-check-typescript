@@ -28,8 +28,12 @@ inputs:
   check-fail-mode:
     description: "Allowed values : added, errors_in_pr, errors_in_code"
     required: true
+  output-behaviour:
+    description: "Allowed values : comment, annotate, both"
+    default: "comment"
+    required: false
   debug:
-    description: "Set true to log ts errors in base branch and pr branc"
+    description: "Set true to log ts errors in base branch and pr branch"
     default: false
 runs:
   using: 'node16'
