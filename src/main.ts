@@ -28,6 +28,11 @@ export type ErrorTs = {
 async function run(): Promise<void> {
   try {
     const args = getAndValidateArgs()
+
+    if (args.debug) {
+      info(`[config] args: \n${JSON.stringify(args)}`)
+    }
+
     const workingDir = path.join(process.cwd(), args.directory)
     info(`working directory: ${workingDir}`)
 
