@@ -30,7 +30,7 @@ inputs:
     required: true
   output-behaviour:
     description: "Allowed values : comment, annotate, both"
-    default: "comment"
+    default: "both"
     required: false
   debug:
     description: "Set true to log ts errors in base branch and pr branch"
