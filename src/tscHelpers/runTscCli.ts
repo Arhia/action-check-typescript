@@ -6,6 +6,7 @@ interface Cfg {
   workingDir: string
   tsconfigPath?: string
   files?: string[]
+  extraArgs: string[]
 }
 /*
 exemple d'output renvoyé
@@ -13,7 +14,7 @@ exemple d'output renvoyé
 src/main.ts(39,11): error TS1155: 'const' declarations must be initialized.
 src/main.ts(39,11): error TS7005: Variable 'hereIsAUnusedVariableToHaveAnError' implicitly has an 'any' type.
 */
-export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promise<{ output: string, error: string }> {
+export async function runTscCli({ workingDir, tsconfigPath, files, extraArgs }: Cfg): Promise<{ output: string, error: string }> {
 
   let myOutput = ''
   let myError = ''
@@ -41,6 +42,10 @@ export async function runTscCli({ workingDir, tsconfigPath, files }: Cfg): Promi
   ]
   if (tsconfigPath) {
     execArgs.push('--project', tsconfigPath)
+  }
+
+  if (extraArgs.length) {
+    execArgs.push(...extraArgs)
   }
   // si on passe un tableau de filenames, on les sépare par un espace pour les passer au compiler
   if (files) {

@@ -16,6 +16,7 @@ type Args = {
   repoToken: string
   directory: string
   tsConfigPath: string
+  tsExtraArgs: string
   filesChanged: string[]
   filesAdded: string[]
   filesDeleted: string[]
@@ -54,14 +55,15 @@ export function getAndValidateArgs(): Args {
   const args = {
     repoToken: getInput('repo-token', { required: true, trimWhitespace: true }),
     directory: getInput('directory', { trimWhitespace: true }),
-    tsConfigPath: getInput('ts-config-path', { trimWhitespace: true, required: true }),
+    tsConfigPath: getInput('ts-config-path', { trimWhitespace: true, required: false }) ?? './tsconfig.json',
+    tsExtraArgs: getInput('ts-extra-args', { trimWhitespace: true, required: false }),
     filesChanged: (getInput('files-changed') ?? "").split(" "),
     filesAdded: (getInput('files-added') ?? "").split(" "),
     filesDeleted: (getInput('files-deleted') ?? "").split(" "),
     lineNumbers: JSON.parse(getInput('line-numbers')) ?? [],
     useCheck: getBooleanInput('use-check'),
-    checkFailMode: getInput('check-fail-mode') as CHECK_FAIL_MODE,
-    outputBehaviour: getInput('output-behaviour') as OUTPUT_BEHAVIOUR,
+    checkFailMode: getInput('check-fail-mode', { required: true }) as CHECK_FAIL_MODE,
+    outputBehaviour: getInput('output-behaviour') as OUTPUT_BEHAVIOUR ?? OUTPUT_BEHAVIOUR.COMMENT_AND_ANNOTATE,
     debug: getBooleanInput('debug')
   }
 

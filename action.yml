@@ -23,6 +23,8 @@ inputs:
   ts-config-path:
     description: "Path of tsconfig file. default is '.'"
     default: './tsconfig.json'
+  ts-extra-args:
+    description: "Additional tsc options to pass, e.g. '--strict'"
   use-check:
     description: 'Report status as a CI Check'
   check-fail-mode:
@@ -30,8 +32,7 @@ inputs:
     required: true
   output-behaviour:
     description: "Allowed values : comment, annotate, both"
-    default: "comment"
-    required: false
+    default: "both"
   debug:
     description: "Set true to log ts errors in base branch and pr branch"
     default: false
