@@ -109,13 +109,13 @@ async function run(): Promise<void> {
     //                                              BASE BRANCH
     // ***********************************************************************************************
 
-    startGroup(`[base branch] compile ts files`)
-
     await checkoutAndInstallBaseBranch({
       installScript,
       payload: context.payload,
       execOptions
     })
+
+    startGroup(`[base branch] compile ts files`)
 
     const { output: tscOutputBase } = await runTscCli({
       workingDir,
