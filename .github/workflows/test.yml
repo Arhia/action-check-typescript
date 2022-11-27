@@ -5,7 +5,7 @@ jobs:
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get diff lines
         id: diff
         uses: Equip-Collaboration/diff-line-numbers@v1.0.0
