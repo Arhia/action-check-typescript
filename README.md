@@ -46,7 +46,7 @@ jobs:
           echo 'Files modified: ${{steps.files.outputs.files_updated}}'
           echo 'Files added: ${{steps.files.outputs.files_created}}'
           echo 'Files removed: ${{steps.files.outputs.files_deleted}}'
-      - uses: Arhia/action-check-typescript@v0.11
+      - uses: Arhia/action-check-typescript@v1.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           use-check: true
@@ -55,6 +55,7 @@ jobs:
           files-added: ${{steps.files.outputs.files_created}}
           files-deleted: ${{steps.files.outputs.files_deleted}}
           line-numbers: ${{steps.diff.outputs.lineNumbers}}
+          output-behaviour: both
 ```
 ## Customize the check  
 
