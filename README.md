@@ -37,7 +37,7 @@ jobs:
           include: '["\\.ts$"]'
       - name: Detecting files changed
         id: files
-        uses: futuratrepadeira/changed-files@v3.3.0
+        uses: umani/changed-files@v4.0.0
         with:
           repo-token: ${{ github.token }}
           pattern: '^.*\.ts$'
