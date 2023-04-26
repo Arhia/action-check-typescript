@@ -15,7 +15,7 @@ jobs:
         run: echo Line numbers = ${{ toJSON(steps.diff.outputs.lineNumbers) }}
       - name: Detecting files changed
         id: files
-        uses: futuratrepadeira/changed-files@v3.2.1
+        uses: umani/changed-files@v4.0.1
         with:
           repo-token: ${{ github.token }}
           pattern: '^.*\.ts$'
