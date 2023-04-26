@@ -56,6 +56,7 @@ jobs:
           files-deleted: ${{steps.files.outputs.files_deleted}}
           line-numbers: ${{steps.diff.outputs.lineNumbers}}
           output-behaviour: both
+          comment-behaviour: new
 ```
 ## Customize the check  
 
@@ -82,6 +83,13 @@ Value|Behaviour
 `comment` | Default, comments on the PR with the errors found for this run.
 `annotate` | Uses github line annotations with the errors found for this run.
 `both` | Does both of the above.
+
+The comment behaviour depends on the value of `comment-behaviour`
+
+Value|Behaviour
+-- | --
+`new` | Default, adds a new comment for every run of the action.
+`edit` | Updates a previous run's comment, if one exists, otherwise creates a new comment.
 
 ## Use a specific tsconfig file
 

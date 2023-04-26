@@ -12,6 +12,11 @@ export const enum OUTPUT_BEHAVIOUR {
   COMMENT_AND_ANNOTATE = 'both'
 }
 
+export const enum COMMENT_BEHAVIOUR {
+  NEW = 'new',
+  EDIT = 'edit'
+}
+
 type Args = {
   repoToken: string
   directory: string
@@ -47,6 +52,7 @@ type Args = {
   useCheck: boolean
   checkFailMode: CHECK_FAIL_MODE
   outputBehaviour: OUTPUT_BEHAVIOUR
+  commentBehaviour: COMMENT_BEHAVIOUR
   debug: boolean
 }
 
@@ -62,6 +68,7 @@ export function getAndValidateArgs(): Args {
     useCheck: getBooleanInput('use-check'),
     checkFailMode: getInput('check-fail-mode', { required: true }) as CHECK_FAIL_MODE,
     outputBehaviour: getInput('output-behaviour') as OUTPUT_BEHAVIOUR,
+    commentBehaviour: getInput('comment-behaviour') as COMMENT_BEHAVIOUR,
     debug: getBooleanInput('debug')
   }
 
@@ -79,6 +86,13 @@ export function getAndValidateArgs(): Args {
     OUTPUT_BEHAVIOUR.COMMENT_AND_ANNOTATE
   ].includes(args.outputBehaviour)) {
     throw new Error(`Invalid value ${args.outputBehaviour} for input output-behaviour`)
+  }
+
+  if (![
+    COMMENT_BEHAVIOUR.NEW,
+    COMMENT_BEHAVIOUR.EDIT,
+  ].includes(args.commentBehaviour)) {
+    throw new Error(`Invalid value ${args.commentBehaviour} for input comment-behaviour`)
   }
 
   return args

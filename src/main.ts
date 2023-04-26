@@ -5,9 +5,9 @@ import { createCheck } from './createCheck'
 import * as github from '@actions/github'
 import * as fs from 'fs'
 import { parseTsConfigFile } from './tscHelpers/parseTsConfigFileToCompilerOptions'
-import { getAndValidateArgs, CHECK_FAIL_MODE, OUTPUT_BEHAVIOUR } from './getAndValidateArgs'
+import { getAndValidateArgs, CHECK_FAIL_MODE, OUTPUT_BEHAVIOUR, COMMENT_BEHAVIOUR } from './getAndValidateArgs'
 import { exec } from '@actions/exec'
-import { getBodyComment } from './getBodyComment'
+import { COMMENT_TITLE, getBodyComment } from './getBodyComment'
 import { checkoutAndInstallBaseBranch } from './checkoutAndInstallBaseBranch'
 import { compareErrors } from './compareErrors'
 import { runTscCli } from './tscHelpers/runTscCli'
@@ -174,9 +174,11 @@ async function run(): Promise<void> {
     if ([OUTPUT_BEHAVIOUR.COMMENT, OUTPUT_BEHAVIOUR.COMMENT_AND_ANNOTATE].includes(args.outputBehaviour)) {
       startGroup(`Creating comment`)
 
+      const issueNumber = context.payload.pull_request!.number
+
       const commentInfo = {
         ...context.repo,
-        issue_number: context.payload.pull_request!.number
+        issue_number: issueNumber
       }
 
       const comment = {
@@ -192,7 +194,17 @@ async function run(): Promise<void> {
       info(`comment body obtained`)
 
       try {
-        await octokit.rest.issues.createComment(comment)
+        const existingComments = await octokit.rest.issues.listComments({owner: context.repo.owner, repo: context.repo.repo, issue_number: issueNumber})
+        const existingComment = existingComments.data.find(c => !!c.body?.includes(COMMENT_TITLE))
+
+        if (args.commentBehaviour === COMMENT_BEHAVIOUR.EDIT && existingComment) {
+          await octokit.rest.issues.updateComment({
+            comment_id: existingComment.id,
+            ...comment
+          })
+        } else {
+          await octokit.rest.issues.createComment(comment)
+        }
       } catch (e) {
         info(`Error creating comment: ${(e as Error).message}`)
         info(`Submitting a PR review comment instead...`)
