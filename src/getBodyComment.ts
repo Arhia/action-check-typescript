@@ -68,8 +68,11 @@ export function getBodyComment({ errorsInProjectBefore, errorsInProjectAfter, er
     s += BLANK_LINE
     s += '<a href="https://github.com/Arhia/action-check-typescript"><sub>Arhia/action-check-typescript</sub></a>'
 
-    return s
-
+    // Github comment body maximum is 65536 characters
+    if(s.length > 60000) {
+        s = s.substring(0, 59997) + '...';
+    }
+    return s;
 }
 
 function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5): string {
@@ -88,7 +91,8 @@ function getListOfErrors(title: string, errors: ErrorTs[], thresholdCollapse = 5
     s += `\nFilename|Location|Message\n`
     s += `-- | -- | -- \n`
     s += errors.map(err => {
-        return `${err.fileName}|${err.line}, ${err.column}|${escapeForMarkdown(err.message)}`
+        const message = escapeForMarkdown(shortenMessage(err.message))
+        return `${err.fileName}|${err.line}, ${err.column}|${message}`
     }).join('\n')
 
 
@@ -154,4 +158,29 @@ function getNbOfErrorsByFile(title: string, errors: ErrorTs[], thresholdCollapse
 
     return s
 
+}
+
+
+/**
+ * Function to intelligently shorten TypeScript error messages.
+ * It shortens the quoted types within the messages to a specified length (default 100 characters).
+ * 
+ * @param {string} s - The TypeScript error message to be shortened.
+ * @param {number} [maxLength=100] - The maximum length for the error message.
+ * 
+ * @returns {string} - The shortened TypeScript error message.
+ */
+export function shortenMessage(s: string, maxLength: number = 100): string {
+    const trimmedStr = s.replace(/'(.*?)'($|[\s.,])/g, (match, p1: string, p2: string) => {
+        if(p1.length > 50) {
+            return `'${p1.substring(0, 47)}...'${p2}`;
+        }
+        return `'${p1}'${p2}`;
+    });
+
+    if(trimmedStr.length > maxLength) {
+        return `${trimmedStr.substring(0, maxLength-3)}...`;
+    }
+    
+    return trimmedStr;
 }
