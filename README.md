@@ -2,27 +2,30 @@
   <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
 </p>
 
-# action-check-typescript  
+# action-check-typescript
 
-A Github action that compile ts files and display the errors found in whole codebase and in files changed in PR.  
+`action-check-typescript` is a GitHub action designed to compile TypeScript files and display the errors found throughout the entire codebase as well as in files changed in pull requests (PRs).
 
-**Used in production at [Arhia](https://github.com/Arhia)**  
+This action is currently used in production at [Arhia](https://github.com/Arhia).
 
-- Automatically uses `yarn` or `npm ci` when lockfiles are present
-- Builds your PR, then run tsc to detect errors  🔍 
-- Compare ts errors in base branch and in PR branch to detect new errors (handle automatically line numbers offset)  💪
-- Doesn't upload anything or rely on centralized storage  👐 
+## Features
+
+- Detects and utilizes `yarn` or `npm ci` automatically when lockfiles are detected
+- Builds your PR, then runs `tsc` to detect any errors 🔍
+- Compares TypeScript errors between the base branch and PR branch to identify new errors (automatically handles line number offsets) 💪
+- Does not upload any data or rely on centralized storage 👐
 
 ## Usage
 
-action-check-typescript rely on two other actions (big thanks to the authors ! ❤️) to : 
-- Equip-Collaboration/diff-line-numbers : retrieve line numbers of added and removed lines in files changed
-- futuratrepadeira/changed-files : list files added, modified and deleted
+`action-check-typescript` relies on two other actions (big thanks to the authors ! ❤️) to:
 
-Add a workflow (eg `.github/workflows/check_ts.yml`):
+- `Equip-Collaboration/diff-line-numbers`: Retrieve line numbers of added and removed lines in changed files.
+- `futuratrepadeira/changed-files`: List files added, modified, and deleted.
+
+To use `action-check-typescript`, add a workflow (for example, `.github/workflows/check_ts.yml`):
 
 ```yaml
-name: 'check-ts'
+name: check-ts
 on:
   pull_request:
 jobs:
@@ -46,7 +49,7 @@ jobs:
           echo 'Files modified: ${{steps.files.outputs.files_updated}}'
           echo 'Files added: ${{steps.files.outputs.files_created}}'
           echo 'Files removed: ${{steps.files.outputs.files_deleted}}'
-      - uses: Arhia/action-check-typescript@v1.0.0
+      - uses: Arhia/action-check-typescript@v1.1.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           use-check: true
@@ -58,49 +61,48 @@ jobs:
           output-behaviour: both
           comment-behaviour: new
 ```
-## Customize the check  
 
-By default, this action doesn't perform a status check (aka pass/fail).  
+## Customizing the Check
 
-You need to set `use-check` on true to run a status check.    
+By default, this action does not perform a status check (i.e., pass or fail).
+
+You need to set `use-check` to `true` to enable a status check:
 
 ```yaml
-  use-check: true
+use-check: true
 ```
 
-How the check status is determined depends on the value of `check-fail-mode`  
+The determination of check status is based on the value of `check-fail-mode`.
 
-Value|Behaviour
--- | -- 
-`added`| Check fails if some errors are added in the files added/modified in the PR branch.  
-`errors_in_pr`| Check fails if any errors are present in the files added/modified in the PR branch (even if already in base branche).  
-`errors_in_code`| Check fails if any errors are present in the whole branch.  
+| Value            | Behaviour                                                                                                            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `added`          | Check fails if some errors are added in the files added/modified in the PR branch.                                   |
+| `errors_in_pr`   | Check fails if any errors are present in the files added/modified in the PR branch (even if already in base branch). |
+| `errors_in_code` | Check fails if any errors are present in the entire branch.                                                          |
 
-The output behaviour depends on the value of `output-behaviour`
+The output behaviour is determined by the value of `output-behaviour`:
 
-Value|Behaviour
--- | --
-`comment` | Default, comments on the PR with the errors found for this run.
-`annotate` | Uses github line annotations with the errors found for this run.
-`both` | Does both of the above.
+| Value      | Behaviour                                                        |
+| ---------- | ---------------------------------------------------------------- |
+| `comment`  | Default, comments on the PR with the errors found for this run.  |
+| `annotate` | Uses GitHub line annotations with the errors found for this run. |
+| `both`     | Does both of the above.                                          |
 
-The comment behaviour depends on the value of `comment-behaviour`
+The comment behaviour depends on the value of `comment-behaviour`:
 
-Value|Behaviour
--- | --
-`new` | Default, adds a new comment for every run of the action.
-`edit` | Updates a previous run's comment, if one exists, otherwise creates a new comment.
+| Value  | Behaviour                                                                         |
+| ------ | --------------------------------------------------------------------------------- |
+| `new`  | Default, adds a new comment for every run of the action.                          |
+| `edit` | Updates a previous run's comment, if one exists, otherwise creates a new comment. |
 
-## Use a specific tsconfig file
+## Using a Specific tsconfig File
 
-By default, this actions uses tsconfig file located at './tsconfig.json'   
+By default, this action uses the tsconfig file located at `./tsconfig.json`.
 
-You may want to use a different file for this action, in order to change tsc behaviour.  
-For example, if you use `watch:true` in your regular tsconfig file, you should disable watching mode.  
-
-In order to do this, you would create a specific tsconfig file (eg name `tsconfig.check.ts`) and setting accordingly the
-parameter `ts-config-path` : 
+If you need to use a different file for this action to change the behavior of `tsc`, you can create a specific tsconfig file (e.g., `tsconfig.check.json`) and set the `ts-config-path` parameter accordingly:
 
 ```yml
-  ts-config-path: './tsconfig.check.json'
+ts-config-path: "./tsconfig.check.json"
 ```
+
+For instance, if you use `watch:true` in your regular tsconfig file, you should disable the watching mode for this action.
