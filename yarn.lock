@@ -595,11 +595,9 @@
   dependencies:
     "@octokit/types" "^6.0.3"
 
-"@octokit/auth-token@^3.0.0":
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/@octokit/auth-token/-/auth-token-3.0.3.tgz"
-  dependencies:
-    "@octokit/types" "^9.0.0"
+"@octokit/auth-token@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/auth-token/-/auth-token-4.0.0.tgz#40d203ea827b9f17f42a29c6afb93b7745ef80c7"
 
 "@octokit/core@^3.6.0":
   version "3.6.0"
@@ -613,15 +611,15 @@
     before-after-hook "^2.2.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/core@^4.1.0":
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/@octokit/core/-/core-4.2.0.tgz"
+"@octokit/core@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/core/-/core-5.0.0.tgz#0fc2b6eb88437e5c1d69f756a5dcee7472d2b2dd"
   dependencies:
-    "@octokit/auth-token" "^3.0.0"
-    "@octokit/graphql" "^5.0.0"
-    "@octokit/request" "^6.0.0"
-    "@octokit/request-error" "^3.0.0"
-    "@octokit/types" "^9.0.0"
+    "@octokit/auth-token" "^4.0.0"
+    "@octokit/graphql" "^7.0.0"
+    "@octokit/request" "^8.0.2"
+    "@octokit/request-error" "^5.0.0"
+    "@octokit/types" "^11.0.0"
     before-after-hook "^2.2.0"
     universal-user-agent "^6.0.0"
 
@@ -633,11 +631,11 @@
     is-plain-object "^5.0.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/endpoint@^7.0.0":
-  version "7.0.5"
-  resolved "https://registry.npmjs.org/@octokit/endpoint/-/endpoint-7.0.5.tgz"
+"@octokit/endpoint@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-9.0.0.tgz#c5ce19c74b999b85af9a8a189275c80faa3e90fd"
   dependencies:
-    "@octokit/types" "^9.0.0"
+    "@octokit/types" "^11.0.0"
     is-plain-object "^5.0.0"
     universal-user-agent "^6.0.0"
 
@@ -649,21 +647,21 @@
     "@octokit/types" "^6.0.3"
     universal-user-agent "^6.0.0"
 
-"@octokit/graphql@^5.0.0":
-  version "5.0.5"
-  resolved "https://registry.npmjs.org/@octokit/graphql/-/graphql-5.0.5.tgz"
+"@octokit/graphql@^7.0.0":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-7.0.1.tgz#f2291620e17cdaa8115f8d0cdfc0644789ec2db2"
   dependencies:
-    "@octokit/request" "^6.0.0"
-    "@octokit/types" "^9.0.0"
+    "@octokit/request" "^8.0.1"
+    "@octokit/types" "^11.0.0"
     universal-user-agent "^6.0.0"
 
 "@octokit/openapi-types@^12.5.0":
   version "12.5.0"
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-12.5.0.tgz"
 
-"@octokit/openapi-types@^16.0.0":
-  version "16.0.0"
-  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-16.0.0.tgz"
+"@octokit/openapi-types@^18.0.0":
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-18.0.0.tgz#f43d765b3c7533fd6fb88f3f25df079c24fccf69"
 
 "@octokit/plugin-paginate-rest@^2.17.0":
   version "2.20.0"
@@ -671,15 +669,15 @@
   dependencies:
     "@octokit/types" "^6.38.1"
 
-"@octokit/plugin-paginate-rest@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-6.0.0.tgz"
+"@octokit/plugin-paginate-rest@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-8.0.0.tgz#417b5367da2ba3c2d255a59b87c1cc608228ec38"
   dependencies:
-    "@octokit/types" "^9.0.0"
+    "@octokit/types" "^11.0.0"
 
-"@octokit/plugin-request-log@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@octokit/plugin-request-log/-/plugin-request-log-1.0.4.tgz"
+"@octokit/plugin-request-log@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-request-log/-/plugin-request-log-4.0.0.tgz#260fa6970aa97bbcbd91f99f3cd812e2b285c9f1"
 
 "@octokit/plugin-rest-endpoint-methods@^5.13.0":
   version "5.16.0"
@@ -688,12 +686,11 @@
     "@octokit/types" "^6.38.0"
     deprecation "^2.3.1"
 
-"@octokit/plugin-rest-endpoint-methods@^7.0.0":
-  version "7.0.1"
-  resolved "https://registry.npmjs.org/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-7.0.1.tgz"
+"@octokit/plugin-rest-endpoint-methods@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-9.0.0.tgz#e15d54540893202da107305ded2bfd21ce6f769d"
   dependencies:
-    "@octokit/types" "^9.0.0"
-    deprecation "^2.3.1"
+    "@octokit/types" "^11.0.0"
 
 "@octokit/request-error@^2.0.5", "@octokit/request-error@^2.1.0":
   version "2.1.0"
@@ -703,11 +700,11 @@
     deprecation "^2.0.0"
     once "^1.4.0"
 
-"@octokit/request-error@^3.0.0":
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/@octokit/request-error/-/request-error-3.0.3.tgz"
+"@octokit/request-error@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/request-error/-/request-error-5.0.0.tgz#060c5770833f9d563ad9a49fec6650c41584bc40"
   dependencies:
-    "@octokit/types" "^9.0.0"
+    "@octokit/types" "^11.0.0"
     deprecation "^2.0.0"
     once "^1.4.0"
 
@@ -722,37 +719,36 @@
     node-fetch "^2.6.7"
     universal-user-agent "^6.0.0"
 
-"@octokit/request@^6.0.0":
-  version "6.2.3"
-  resolved "https://registry.npmjs.org/@octokit/request/-/request-6.2.3.tgz"
+"@octokit/request@^8.0.1", "@octokit/request@^8.0.2":
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/request/-/request-8.1.0.tgz#3b0fd15faeda1545024af09c31ac2689f4d65e7d"
   dependencies:
-    "@octokit/endpoint" "^7.0.0"
-    "@octokit/request-error" "^3.0.0"
-    "@octokit/types" "^9.0.0"
+    "@octokit/endpoint" "^9.0.0"
+    "@octokit/request-error" "^5.0.0"
+    "@octokit/types" "^11.1.0"
     is-plain-object "^5.0.0"
-    node-fetch "^2.6.7"
     universal-user-agent "^6.0.0"
 
-"@octokit/rest@19.0.7":
-  version "19.0.7"
-  resolved "https://registry.npmjs.org/@octokit/rest/-/rest-19.0.7.tgz"
+"@octokit/rest@20.0.1":
+  version "20.0.1"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-20.0.1.tgz#b8ee194b7cf89772d1e3fea3209f741c76a5efd3"
   dependencies:
-    "@octokit/core" "^4.1.0"
-    "@octokit/plugin-paginate-rest" "^6.0.0"
-    "@octokit/plugin-request-log" "^1.0.4"
-    "@octokit/plugin-rest-endpoint-methods" "^7.0.0"
+    "@octokit/core" "^5.0.0"
+    "@octokit/plugin-paginate-rest" "^8.0.0"
+    "@octokit/plugin-request-log" "^4.0.0"
+    "@octokit/plugin-rest-endpoint-methods" "^9.0.0"
+
+"@octokit/types@^11.0.0", "@octokit/types@^11.1.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-11.1.0.tgz#9e5db741d582b05718a4d91bac8cc987def235ea"
+  dependencies:
+    "@octokit/openapi-types" "^18.0.0"
 
 "@octokit/types@^6.0.3", "@octokit/types@^6.16.1", "@octokit/types@^6.38.0", "@octokit/types@^6.38.1":
   version "6.38.1"
   resolved "https://registry.npmjs.org/@octokit/types/-/types-6.38.1.tgz"
   dependencies:
     "@octokit/openapi-types" "^12.5.0"
-
-"@octokit/types@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/@octokit/types/-/types-9.0.0.tgz"
-  dependencies:
-    "@octokit/openapi-types" "^16.0.0"
 
 "@sinclair/typebox@^0.25.16":
   version "0.25.24"
