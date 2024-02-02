@@ -35,3 +35,4 @@ jobs:
           files-deleted: ${{steps.files.outputs.files_deleted}}
           line-numbers: ${{steps.diff.outputs.lineNumbers}}
           debug: true
+          output-behaviour: 'both'
